@@ -25,7 +25,19 @@
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
-  background: var(--bg);
+  background-color: var(--bg);
+  /* starfield: tiny hard-edged dots, tiled */
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(255,246,230,.55) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 63% 7%, rgba(255,246,230,.4) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 82% 44%, rgba(195,185,222,.5) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 34% 61%, rgba(255,246,230,.35) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 91% 88%, rgba(255,210,63,.45) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 47% 92%, rgba(255,246,230,.4) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 6% 74%, rgba(195,185,222,.45) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 25% 36%, rgba(255,246,230,.3) 0 .8px, transparent 1.4px),
+    radial-gradient(circle at 72% 70%, rgba(255,246,230,.3) 0 .8px, transparent 1.4px);
+  background-size: 420px 420px;
   color: var(--cream);
   font-family: var(--font-tc);
   -webkit-text-size-adjust: 100%;
@@ -84,7 +96,7 @@ button { font-family: inherit; }
 }
 
 /* ===== Home hero ===== */
-.home-top { display: flex; flex-wrap: wrap; align-items: center; gap: 0 clamp(24px, 4vw, 64px); }
+.home-top { position: relative; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0 clamp(24px, 4vw, 64px); }
 .home-hero {
   flex: 0 0 auto; width: min(100%, 600px, 80vh); min-width: min(100%, 320px); aspect-ratio: 1; position: relative; overflow: hidden;
   container-type: inline-size;
@@ -130,6 +142,7 @@ button { font-family: inherit; }
 /* ===== About ===== */
 .about {
   flex: 1 1 380px; max-width: 760px; margin: 0 auto; padding: clamp(24px, 4cqw, 48px) var(--pad-x);
+  align-self: center; position: relative; z-index: 1;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: clamp(28px, 4cqw, 56px);
 }
 .about-photo {
@@ -331,4 +344,77 @@ button { font-family: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
+}
+
+
+/* ===== Decorations ===== */
+.deco { position: absolute; pointer-events: none; }
+/* 4-point sparkle */
+.sparkle {
+  position: absolute; pointer-events: none; aspect-ratio: 1; background: var(--yellow);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  animation: twinkle 3.2s ease-in-out infinite;
+}
+.sparkle.cream { background: var(--cream); }
+.sparkle.lilac { background: var(--lilac); }
+.sparkle.teal { background: var(--teal); }
+@keyframes twinkle { 0%, 100% { transform: scale(1) rotate(0); opacity: 1; } 50% { transform: scale(.55) rotate(45deg); opacity: .6; } }
+
+/* shooting star */
+.shooting {
+  position: absolute; height: 3px; width: clamp(80px, 12vw, 160px); border-radius: 3px; pointer-events: none;
+  background: linear-gradient(90deg, rgba(255,246,230,0), var(--cream));
+  transform: rotate(-24deg); opacity: 0;
+  animation: shoot 7s linear infinite;
+}
+.shooting::after { content: ''; position: absolute; right: -3px; top: -2.5px; width: 8px; height: 8px; border-radius: 50%; background: var(--cream); }
+@keyframes shoot {
+  0% { opacity: 0; translate: 0 0; }
+  4% { opacity: 1; }
+  14% { opacity: 0; translate: -260px 116px; }
+  100% { opacity: 0; translate: -260px 116px; }
+}
+
+/* small ringed planet */
+.ringed {
+  position: absolute; pointer-events: none; aspect-ratio: 1; border-radius: 50%;
+  background: repeating-radial-gradient(circle at 30% 25%, var(--c, var(--teal)) 0 18%, var(--d, #1f8f85) 18% 30%, var(--c, var(--teal)) 30% 44%);
+  box-shadow: inset -6px -7px 0 rgba(29,20,70,.35);
+  animation: bob 6s ease-in-out infinite;
+}
+.ringed::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 190%; height: 42%;
+  transform: translate(-50%, -50%) rotate(-18deg); border-radius: 50%;
+  border: 3px solid var(--cream); border-top-color: transparent;
+}
+@keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+
+/* about photo with orbiting moon */
+.photo-wrap { position: relative; flex: 0 0 auto; margin: 28px; }
+.photo-wrap .about-photo { margin: 0; max-width: none; width: clamp(180px, 20cqw, 280px); }
+.photo-orbit {
+  position: absolute; inset: -46px; border-radius: 50%; border: 2px dashed rgba(195,185,222,.45);
+  animation: spin 18s linear infinite; pointer-events: none;
+}
+.photo-orbit::before {
+  content: ''; position: absolute; top: 50%; left: -11px; width: 20px; height: 20px; margin-top: -10px; border-radius: 50%;
+  background: var(--lilac); box-shadow: inset -4px -4px 0 #8f84b0;
+}
+.photo-orbit::after {
+  content: ''; position: absolute; top: -6px; left: 50%; width: 11px; height: 11px; margin-left: -5px; border-radius: 50%;
+  background: var(--orange-2);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* CV section: small stars on the teal planet */
+.cv .sparkle { z-index: 1; }
+
+@media (max-width: 719px) {
+  .photo-orbit { inset: -34px; }
+  .shooting { display: none; }
+  .home-top > .ringed { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sparkle, .shooting, .ringed, .photo-orbit { animation: none !important; }
+  .shooting { display: none; }
 }
