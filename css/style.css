@@ -489,3 +489,11 @@ button { font-family: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .hero-meteor.hit .meteor, .hero-meteor.hit .cracks { animation: none; }
 }
+
+/* ===== CV blocks (dynamic) ===== */
+.cv-blocks { display: flex; flex-direction: column; gap: 20px; }
+.cv-blocks .cv-block + .cv-block { border-top: 2px solid var(--bg); padding-top: 18px; }
+.cv-row.no-time .what { flex-basis: 100%; }
+.cv-row .what ul { margin: 4px 0 0; padding-left: 1.2em; font-size: 14px; line-height: 1.7; color: var(--muted-2); }
+.cv-row .what ul li::marker { color: var(--red); }
+.cert .stub b.check { font-size: clamp(24px, 3cqw, 30px); }

@@ -80,23 +80,36 @@
     $('#hero-sub').textContent = P.subtitle;
     $('#about-text').textContent = P.about;
     if (P.photo) $('#about-photo').innerHTML = `<img src="${esc(P.photo)}" alt="${esc(P.name)}">`;
-    const rows = (list) => list.map((e) => `<div class="cv-row"><span class="time">${esc(e.time)}</span><div class="what"><b>${esc(e.title)}</b><span>${esc(e.desc)}</span></div></div>`).join('');
-    $('#cv-exp').innerHTML = '<span class="cv-label">經歷</span>' + rows(P.experience);
-    $('#cv-edu').innerHTML = '<span class="cv-label">學歷</span>' + rows(P.education);
+    const desc = (d) => Array.isArray(d)
+      ? `<ul>${d.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`
+      : (d ? `<span>${esc(d)}</span>` : '');
+    const rows = (list) => list.map((e) =>
+      `<div class="cv-row${e.time ? '' : ' no-time'}">` +
+      (e.time ? `<span class="time">${esc(e.time)}</span>` : '') +
+      `<div class="what"><b>${esc(e.title)}</b>${desc(e.desc)}</div></div>`).join('');
+    const blocks = [
+      ['實習經驗', P.internships], ['社團經驗', P.clubs], ['學歷', P.education], ['AI 技能', P.aiSkills],
+      ['經歷', P.experience]
+    ].filter(([, list]) => list && list.length);
+    $('#cv-blocks').innerHTML = blocks.map(([label, list]) =>
+      `<div class="cv-block"><span class="cv-label">${label}</span>${rows(list)}</div>`).join('');
     $('#cv-skills').innerHTML = P.skills.map((s) => `<span>${esc(s)}</span>`).join('');
   }
 
   /* ---------- Portfolio ---------- */
   if (page === 'portfolio') {
-    const COL = { 金融: ['#e8b06a', '#b0723a'], 程式: ['#2ec4b6', '#1f8f85'], 數據: ['#c3b9de', '#8f84b0'], 設計: ['#ffd23f', '#d4a92a'] };
-    const cats = ['全部', '金融', '程式', '數據', '設計'];
+    const PALETTE = [['#e8b06a', '#b0723a'], ['#2ec4b6', '#1f8f85'], ['#c3b9de', '#8f84b0'], ['#ffd23f', '#d4a92a'], ['#ff8a4c', '#e0532a']];
+    const found = [...new Set(S.projects.map((p) => p.category))];
+    const COL = {};
+    found.forEach((c, i) => { COL[c] = PALETTE[i % PALETTE.length]; });
+    const cats = ['全部', ...found];
     let cur = '全部';
     const chips = $('#chips'), grid = $('#grid');
     function render() {
       chips.innerHTML = cats.map((c) => `<button class="chip${c === cur ? ' on' : ''}" aria-pressed="${c === cur}" data-c="${c}">${c}</button>`).join('');
       const list = cur === '全部' ? S.projects : S.projects.filter((p) => p.category === cur);
       grid.innerHTML = list.map((p) => {
-        const [c, d] = COL[p.category] || COL['金融'];
+        const [c, d] = COL[p.category] || PALETTE[0];
         const link = p.url ? `<a class="view" href="${esc(p.url)}" target="_blank" rel="noopener">查看專案 →</a>` : `<a class="view" aria-disabled="true">查看專案 →</a>`;
         return `<article class="project" style="--c:${c}">` +
           `<div class="frame">${media(p.img, p.title, c, d)}</div>` +
@@ -131,7 +144,7 @@
       }).join('');
       const shown = cur === '總覽' ? all : all.filter((x) => x.category === cur);
       list.innerHTML = shown.map((c, i) =>
-        `<div class="cert"><div class="stub"><b>${esc(c.year)}</b><span>取得</span></div>` +
+        `<div class="cert"><div class="stub">${c.year ? `<b>${esc(c.year)}</b><span>取得</span>` : '<b class="check" aria-hidden="true">✓</b><span>已取得</span>'}</div>` +
         `<div class="info"><div class="text"><span class="ccat">${esc(c.category)}</span><h3>${esc(c.name)}</h3><span class="issuer">${esc(c.issuer)}</span></div>` +
         `<div class="actions"><span class="result">${esc(c.result)}</span>` +
         (c.img ? `<button class="see" data-i="${all.indexOf(c)}">查看證書 →</button>` : '') +
