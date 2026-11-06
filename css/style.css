@@ -207,7 +207,7 @@ button { font-family: inherit; }
   display: flex; align-items: center; padding: clamp(28px, 4cqw, 56px) var(--pad-x);
 }
 .page-hero .hero-meteor {
-  position: absolute; right: max(var(--pad-x), calc((100cqw - 1200px) / 2 + var(--pad-x))); top: 50%; width: clamp(96px, 26cqw, 320px); aspect-ratio: 1;
+  position: absolute; right: max(var(--pad-x), calc((100cqw - 1200px) / 2 + var(--pad-x))); top: 50%; width: clamp(110px, 24cqw, 300px); aspect-ratio: 1;
   transform: translateY(-50%) rotate(var(--rot, -8deg));
 }
 .page-hero .hero-meteor .meteor { box-shadow: inset -1.6cqw -2cqw 0 var(--meteor-shadow); }
@@ -417,4 +417,75 @@ button { font-family: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .sparkle, .shooting, .ringed, .photo-orbit { animation: none !important; }
   .shooting { display: none; }
+}
+
+/* ===== Meteor mini-game ===== */
+.page-hero .hero-meteor.game {
+  z-index: 2; cursor: pointer; user-select: none; -webkit-user-select: none;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.hero-meteor.game .meteor, .hero-meteor.game .cracks { transition: scale .2s; }
+.hero-meteor.game:hover .meteor, .hero-meteor.game:hover .cracks { scale: 1.04; }
+.hero-meteor.game:focus-visible { outline: none; }
+.hero-meteor.game:focus-visible .meteor { outline: 3px dashed var(--yellow); outline-offset: 8px; }
+.hero-meteor .cracks { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.hero-meteor .cracks path {
+  fill: none; stroke: var(--bg); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
+  vector-effect: non-scaling-stroke; opacity: 0; transition: opacity .15s;
+}
+.hero-meteor .cracks path.on { opacity: 1; }
+.hero-meteor.hit .meteor, .hero-meteor.hit .cracks { animation: meteor-hit .32s ease-out; }
+@keyframes meteor-hit {
+  0% { translate: 0 0; rotate: 0deg; }
+  20% { translate: -6px 3px; rotate: -4deg; }
+  45% { translate: 5px -3px; rotate: 3deg; }
+  70% { translate: -3px 1px; rotate: -1deg; }
+  100% { translate: 0 0; rotate: 0deg; }
+}
+.hero-meteor.boom .meteor, .hero-meteor.boom .cracks, .hero-meteor.boom .game-label { animation: meteor-boom .3s ease-in forwards; }
+@keyframes meteor-boom { to { scale: 1.3; opacity: 0; } }
+.hero-meteor.reform .meteor, .hero-meteor.reform .cracks, .hero-meteor.reform .game-label { animation: meteor-reform .6s cubic-bezier(.3, 1.6, .5, 1) both; }
+@keyframes meteor-reform { from { scale: 0; opacity: 0; } to { scale: 1; opacity: 1; } }
+
+.game-label {
+  position: absolute; left: 50%; bottom: 14%; translate: -50% 0; rotate: calc(var(--rot, 0deg) * -1);
+  background: var(--bg); color: var(--cream); border-radius: 999px; white-space: nowrap;
+  font: 900 clamp(11px, 1.3cqw, 14px) var(--font-tc); padding: 5px 12px; pointer-events: none;
+  display: flex; align-items: center; gap: 6px;
+}
+.game-label .pips { display: inline-flex; gap: 3px; }
+.game-label .pips i { width: 6px; height: 6px; border-radius: 50%; background: var(--purple-2); }
+.game-label .pips i.on { background: var(--yellow); }
+
+.frag { position: fixed; z-index: 60; pointer-events: none; left: 0; top: 0; }
+.frag.rock { border-radius: 46% 54% 40% 60% / 58% 42% 58% 42%; box-shadow: inset -2px -2px 0 rgba(29,20,70,.3); }
+.frag.star {
+  background: var(--yellow);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+}
+.frag.pop { font: 900 14px var(--font-en); color: var(--yellow); white-space: nowrap; text-shadow: 2px 2px 0 var(--bg); }
+
+.egg-toast {
+  position: fixed; z-index: 70; left: 50%; bottom: 20px; width: min(420px, calc(100vw - 32px));
+  translate: -50% 140%; opacity: 0; transition: translate .45s cubic-bezier(.3, 1.4, .5, 1), opacity .3s;
+  background: var(--cream); color: var(--bg); border-radius: 22px; padding: 18px 48px 18px 18px;
+  display: flex; gap: 14px; align-items: flex-start;
+  box-shadow: inset -8px -9px 0 var(--egg-c, var(--yellow)), 0 0 0 3px var(--bg);
+}
+.egg-toast.show { translate: -50% 0; opacity: 1; }
+.egg-toast .egg-icon {
+  flex: 0 0 44px; height: 44px; border-radius: 50%;
+  background: repeating-radial-gradient(circle at 30% 25%, var(--egg-c) 0 18%, var(--egg-d) 18% 30%, var(--egg-c) 30% 44%);
+  box-shadow: inset -5px -6px 0 rgba(29,20,70,.3);
+}
+.egg-toast b { display: block; font: 900 16px var(--font-tc); margin-bottom: 4px; }
+.egg-toast p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--muted-2); }
+.egg-toast small { display: block; margin-top: 8px; font: 700 12px var(--font-en); color: var(--red); letter-spacing: .04em; }
+.egg-toast button {
+  position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; border: 0;
+  background: var(--bg); color: var(--cream); font: 900 16px var(--font-en); cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-meteor.hit .meteor, .hero-meteor.hit .cracks { animation: none; }
 }

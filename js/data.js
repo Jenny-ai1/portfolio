@@ -24,6 +24,13 @@ window.SITE = {
     skills: ['Excel / VBA', 'Power BI', 'Python', 'SQL', 'Figma', 'Illustrator', 'TOEIC 880']
   },
 
+  // 內頁隕石小遊戲：敲碎隕石後跳出的彩蛋文字（可以改成你自己的小秘密）
+  easterEggs: {
+    portfolio: '這個網站本身也是我的作品之一：用 HTML、CSS、JavaScript 從零打造，連隕石都是用 CSS 畫的。',
+    hobbies: '登山時背包裡一定有一包手沖咖啡豆，在山頂煮一杯是我最喜歡的儀式。',
+    certificates: '準備證照期間，我用 Excel 做了一張讀書進度表，每天打卡，連續 60 天沒有中斷。'
+  },
+
   // category 可選：金融 / 程式 / 數據 / 設計
   projects: [
     { category: '金融', year: '2024', title: '半導體個股估值模型', description: '以 DCF 與同業比較法評估三檔半導體個股，整理敏感度分析與投資建議報告。', tags: ['Excel', 'DCF', '財報分析'], img: '', url: '' },

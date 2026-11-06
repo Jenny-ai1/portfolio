@@ -142,4 +142,143 @@
     list.addEventListener('click', (e) => { const b = e.target.closest('.see'); if (b) { const c = all[+b.dataset.i]; openLightbox(c.img, c.name); } });
     render();
   }
+
+  /* ---------- Meteor mini-game (inner pages) ---------- */
+  const heroMeteor = document.querySelector('.page-hero .hero-meteor');
+  if (heroMeteor && S.easterEggs && S.easterEggs[page]) initMeteorGame(heroMeteor);
+
+  function initMeteorGame(el) {
+    const HITS = 5;
+    const COLORS = {
+      portfolio: { c: '#e8b06a', d: '#b0723a', crater: '#b9803f' },
+      hobbies: { c: '#c3b9de', d: '#8f84b0', crater: '#9a8fb8' },
+      certificates: { c: '#ffd23f', d: '#d4a92a', crater: '#c4a640' }
+    }[page];
+    const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const store = {
+      get() { try { return +localStorage.getItem('meteorsSmashed') || 0; } catch (e) { return 0; } },
+      set(v) { try { localStorage.setItem('meteorsSmashed', String(v)); } catch (e) { /* ignore */ } }
+    };
+
+    el.classList.add('game');
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('aria-label', `小遊戲：點擊隕石 ${HITS} 次把它敲碎`);
+
+    // crack lines, revealed one per hit
+    el.insertAdjacentHTML('beforeend',
+      '<svg class="cracks" viewBox="0 0 100 100" aria-hidden="true">' +
+      '<path d="M50 48 L38 30 L41 18"/>' +
+      '<path d="M50 48 L66 40 L80 44"/>' +
+      '<path d="M50 48 L46 66 L56 80 L54 90"/>' +
+      '<path d="M50 48 L30 56 L18 52 M38 30 L28 26"/>' +
+      '</svg>' +
+      `<span class="game-label">點我<span class="pips">${'<i></i>'.repeat(HITS)}</span></span>`);
+    const cracks = el.querySelectorAll('.cracks path');
+    const pips = el.querySelectorAll('.pips i');
+
+    let hits = 0, busy = false;
+
+    function burst(x, y, n, spread, big) {
+      if (reduced) n = Math.ceil(n / 3);
+      for (let i = 0; i < n; i++) {
+        const f = document.createElement('span');
+        const isStar = Math.random() < (big ? 0.35 : 0.2);
+        const size = isStar ? 8 + Math.random() * 10 : (big ? 8 : 5) + Math.random() * (big ? 16 : 9);
+        f.className = 'frag ' + (isStar ? 'star' : 'rock');
+        f.style.width = f.style.height = size + 'px';
+        if (!isStar) f.style.background = [COLORS.c, COLORS.d, COLORS.crater][i % 3];
+        document.body.appendChild(f);
+        const ang = Math.random() * Math.PI * 2;
+        const dist = spread * (0.5 + Math.random() * 0.7);
+        const dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist;
+        const rot = (Math.random() - 0.5) * 720;
+        const x0 = x - size / 2, y0 = y - size / 2;
+        f.animate([
+          { transform: `translate(${x0}px, ${y0}px) rotate(0deg)`, opacity: 1 },
+          { transform: `translate(${x0 + dx * 0.7}px, ${y0 + dy * 0.7 - 30}px) rotate(${rot * 0.6}deg)`, opacity: 1, offset: 0.55 },
+          { transform: `translate(${x0 + dx}px, ${y0 + dy + 60}px) rotate(${rot}deg)`, opacity: 0 }
+        ], { duration: 700 + Math.random() * 500, easing: 'cubic-bezier(.2,.7,.4,1)' }).onfinish = () => f.remove();
+      }
+    }
+
+    function popText(x, y, text) {
+      const t = document.createElement('span');
+      t.className = 'frag pop';
+      t.textContent = text;
+      document.body.appendChild(t);
+      t.animate([
+        { transform: `translate(${x - 14}px, ${y - 20}px)`, opacity: 1 },
+        { transform: `translate(${x - 14}px, ${y - 70}px)`, opacity: 0 }
+      ], { duration: 800, easing: 'ease-out' }).onfinish = () => t.remove();
+    }
+
+    let toast, toastTimer;
+    function showEgg(total) {
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'egg-toast';
+        toast.setAttribute('role', 'status');
+        toast.style.setProperty('--egg-c', COLORS.c);
+        toast.style.setProperty('--egg-d', COLORS.d);
+        toast.innerHTML = '<span class="egg-icon"></span><div><b></b><p></p><small></small></div><button aria-label="關閉">×</button>';
+        toast.querySelector('button').addEventListener('click', () => toast.classList.remove('show'));
+        document.body.appendChild(toast);
+      }
+      toast.querySelector('b').textContent = '隕石碎了！你發現一個彩蛋';
+      toast.querySelector('p').textContent = S.easterEggs[page];
+      toast.querySelector('small').textContent = `你總共敲碎了 ${total} 顆隕石`;
+      requestAnimationFrame(() => toast.classList.add('show'));
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 7000);
+    }
+
+    function restart(cls) {
+      el.classList.remove(cls);
+      void el.offsetWidth; // restart CSS animation
+      el.classList.add(cls);
+    }
+
+    function hit(x, y) {
+      if (busy) return;
+      hits++;
+      cracks.forEach((p, i) => p.classList.toggle('on', i < hits));
+      pips.forEach((p, i) => p.classList.toggle('on', i < hits));
+      if (hits < HITS) {
+        restart('hit');
+        burst(x, y, 6, 70, false);
+        popText(x, y, `${hits}/${HITS}`);
+        return;
+      }
+      // smashed!
+      busy = true;
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      el.classList.remove('hit', 'reform');
+      el.classList.add('boom');
+      burst(cx, cy, 28, Math.max(140, r.width * 0.9), true);
+      const total = store.get() + 1;
+      store.set(total);
+      showEgg(total);
+      setTimeout(() => {
+        hits = 0;
+        cracks.forEach((p) => p.classList.remove('on'));
+        pips.forEach((p) => p.classList.remove('on'));
+        el.classList.remove('boom');
+        restart('reform');
+        busy = false;
+      }, 1400);
+    }
+
+    el.addEventListener('click', (e) => {
+      const r = el.getBoundingClientRect();
+      // keyboard "clicks" report 0,0 — use the centre instead
+      const x = e.clientX || r.left + r.width / 2;
+      const y = e.clientY || r.top + r.height / 2;
+      hit(x, y);
+    });
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+    });
+  }
 })();
