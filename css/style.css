@@ -469,7 +469,7 @@ button { font-family: inherit; }
   position: fixed; z-index: 70; left: 50%; bottom: 20px; width: min(420px, calc(100vw - 32px));
   translate: -50% 140%; opacity: 0; transition: translate .45s cubic-bezier(.3, 1.4, .5, 1), opacity .3s;
   background: var(--cream); color: var(--bg); border-radius: 22px; padding: 18px 48px 18px 18px;
-  display: flex; gap: 14px; align-items: flex-start;
+  display: flex; gap: 14px; align-items: center;
   box-shadow: inset -8px -9px 0 var(--egg-c, var(--yellow)), 0 0 0 3px var(--bg);
 }
 .egg-toast.show { translate: -50% 0; opacity: 1; }
@@ -478,7 +478,7 @@ button { font-family: inherit; }
   background: repeating-radial-gradient(circle at 30% 25%, var(--egg-c) 0 18%, var(--egg-d) 18% 30%, var(--egg-c) 30% 44%);
   box-shadow: inset -5px -6px 0 rgba(29,20,70,.3);
 }
-.egg-toast b { display: block; font: 900 16px var(--font-tc); margin-bottom: 4px; }
+.egg-toast b { display: block; font: 900 16px/1.6 var(--font-tc); }
 .egg-toast p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--muted-2); }
 .egg-toast small { display: block; margin-top: 8px; font: 700 12px var(--font-en); color: var(--red); letter-spacing: .04em; }
 .egg-toast button {

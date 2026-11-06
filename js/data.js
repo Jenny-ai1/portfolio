@@ -24,12 +24,8 @@ window.SITE = {
     skills: ['Excel / VBA', 'Power BI', 'Python', 'SQL', 'Figma', 'Illustrator', 'TOEIC 880']
   },
 
-  // 內頁隕石小遊戲：敲碎隕石後跳出的彩蛋文字（可以改成你自己的小秘密）
-  easterEggs: {
-    portfolio: '這個網站本身也是我的作品之一：用 HTML、CSS、JavaScript 從零打造，連隕石都是用 CSS 畫的。',
-    hobbies: '登山時背包裡一定有一包手沖咖啡豆，在山頂煮一杯是我最喜歡的儀式。',
-    certificates: '準備證照期間，我用 Excel 做了一張讀書進度表，每天打卡，連續 60 天沒有中斷。'
-  },
+  // 內頁隕石小遊戲：敲碎隕石後跳出的文字
+  eggMessage: '恭喜你找到了一個彩蛋！今天將會無比順利！',
 
   // category 可選：金融 / 程式 / 數據 / 設計
   projects: [

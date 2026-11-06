@@ -145,7 +145,7 @@
 
   /* ---------- Meteor mini-game (inner pages) ---------- */
   const heroMeteor = document.querySelector('.page-hero .hero-meteor');
-  if (heroMeteor && S.easterEggs && S.easterEggs[page]) initMeteorGame(heroMeteor);
+  if (heroMeteor) initMeteorGame(heroMeteor);
 
   function initMeteorGame(el) {
     const HITS = 5;
@@ -155,10 +155,6 @@
       certificates: { c: '#ffd23f', d: '#d4a92a', crater: '#c4a640' }
     }[page];
     const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const store = {
-      get() { try { return +localStorage.getItem('meteorsSmashed') || 0; } catch (e) { return 0; } },
-      set(v) { try { localStorage.setItem('meteorsSmashed', String(v)); } catch (e) { /* ignore */ } }
-    };
 
     el.classList.add('game');
     el.setAttribute('role', 'button');
@@ -172,10 +168,8 @@
       '<path d="M50 48 L66 40 L80 44"/>' +
       '<path d="M50 48 L46 66 L56 80 L54 90"/>' +
       '<path d="M50 48 L30 56 L18 52 M38 30 L28 26"/>' +
-      '</svg>' +
-      `<span class="game-label">點我<span class="pips">${'<i></i>'.repeat(HITS)}</span></span>`);
+      '</svg>');
     const cracks = el.querySelectorAll('.cracks path');
-    const pips = el.querySelectorAll('.pips i');
 
     let hits = 0, busy = false;
 
@@ -214,20 +208,18 @@
     }
 
     let toast, toastTimer;
-    function showEgg(total) {
+    function showEgg() {
       if (!toast) {
         toast = document.createElement('div');
         toast.className = 'egg-toast';
         toast.setAttribute('role', 'status');
         toast.style.setProperty('--egg-c', COLORS.c);
         toast.style.setProperty('--egg-d', COLORS.d);
-        toast.innerHTML = '<span class="egg-icon"></span><div><b></b><p></p><small></small></div><button aria-label="關閉">×</button>';
+        toast.innerHTML = '<span class="egg-icon"></span><b></b><button aria-label="關閉">×</button>';
         toast.querySelector('button').addEventListener('click', () => toast.classList.remove('show'));
         document.body.appendChild(toast);
       }
-      toast.querySelector('b').textContent = '隕石碎了！你發現一個彩蛋';
-      toast.querySelector('p').textContent = S.easterEggs[page];
-      toast.querySelector('small').textContent = `你總共敲碎了 ${total} 顆隕石`;
+      toast.querySelector('b').textContent = S.eggMessage || '恭喜你找到了一個彩蛋！今天將會無比順利！';
       requestAnimationFrame(() => toast.classList.add('show'));
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toast.classList.remove('show'), 7000);
@@ -243,7 +235,6 @@
       if (busy) return;
       hits++;
       cracks.forEach((p, i) => p.classList.toggle('on', i < hits));
-      pips.forEach((p, i) => p.classList.toggle('on', i < hits));
       if (hits < HITS) {
         restart('hit');
         burst(x, y, 6, 70, false);
@@ -257,13 +248,10 @@
       el.classList.remove('hit', 'reform');
       el.classList.add('boom');
       burst(cx, cy, 28, Math.max(140, r.width * 0.9), true);
-      const total = store.get() + 1;
-      store.set(total);
-      showEgg(total);
+      showEgg();
       setTimeout(() => {
         hits = 0;
         cracks.forEach((p) => p.classList.remove('on'));
-        pips.forEach((p) => p.classList.remove('on'));
         el.classList.remove('boom');
         restart('reform');
         busy = false;
