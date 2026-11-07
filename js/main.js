@@ -76,6 +76,7 @@
 
   /* ---------- Home ---------- */
   if (page === 'home') {
+    if (P.greeting) $('#hero-hello').textContent = P.greeting;
     $('#hero-name').textContent = P.name;
     $('#hero-sub').textContent = P.subtitle;
     $('#about-text').textContent = P.about;
