@@ -168,6 +168,7 @@ button { font-family: inherit; }
 .btn--orange { background: var(--orange-1); color: var(--bg); }
 .btn--orange:hover { background: var(--yellow); color: var(--bg); }
 .btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+.cv-pick { display: flex; flex-wrap: wrap; gap: 10px; align-self: flex-start; }
 
 /* ===== CV ===== */
 .cv { position: relative; overflow: hidden; margin-top: clamp(24px, 4cqw, 48px); padding: clamp(48px, 6cqw, 80px) clamp(16px, 4cqw, 56px) 48px; }

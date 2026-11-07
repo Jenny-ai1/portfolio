@@ -69,9 +69,26 @@
   }
 
   /* ---------- CV download buttons ---------- */
+  const CV_LANGS = [
+    { file: P.cvPdf, label: '中文 CV ↓', name: `${P.name}_CV.pdf`, lang: 'zh-Hant' },
+    { file: P.cvPdfEn, label: 'English CV ↓', name: 'Janelee_CV.pdf', lang: 'en' }
+  ];
   document.querySelectorAll('[data-cv]').forEach((a) => {
-    if (P.cvPdf) { a.href = P.cvPdf; a.setAttribute('download', ''); }
-    else { a.removeAttribute('href'); a.setAttribute('aria-disabled', 'true'); a.title = '尚未上傳 CV'; }
+    const group = document.createElement('div');
+    group.className = 'cv-pick';
+    group.setAttribute('role', 'group');
+    group.setAttribute('aria-label', '下載 CV');
+    if (a.getAttribute('style')) group.setAttribute('style', a.getAttribute('style'));
+    CV_LANGS.forEach((c) => {
+      const b = document.createElement('a');
+      b.className = a.className;
+      b.textContent = c.label;
+      b.lang = c.lang;
+      if (c.file) { b.href = c.file; b.setAttribute('download', c.name); }
+      else { b.setAttribute('aria-disabled', 'true'); b.title = '尚未上傳 CV'; }
+      group.appendChild(b);
+    });
+    a.replaceWith(group);
   });
 
   /* ---------- Home ---------- */
