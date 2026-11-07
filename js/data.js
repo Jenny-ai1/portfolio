@@ -11,7 +11,7 @@ window.SITE = {
     "name": "李佩臻",
     "subtitle": "會計 × 金融 × AI 應用",
     "about": "我是台北大學會計系大二在學，曾於富邦人壽、昆山農商銀行與北大阿默實習商店實習，並擔任證券研究社社長。擅長運用 AI 工具（Notion、Canva、Gmail）簡化行銷與行政工作，期望在金融業結合專業知識與科技能力。",
-    "photo": "",
+    "photo": "images/me.jpg",
     "cvPdf": "",
     "email": "janepenny08@gmail.com",
     "internships": [
