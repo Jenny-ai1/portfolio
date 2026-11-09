@@ -20,7 +20,7 @@
     header.innerHTML =
       `<a class="logo" href="index.html"><span class="logo-planet"></span>${esc(P.name)}</a>` +
       `<nav class="nav" aria-label="主選單">` +
-      PAGES.map((p) => `<a href="${p.href}"${p.id === page ? ' class="current" aria-current="page"' : ''}>${p.label}</a>`).join('') +
+      PAGES.map((p) => `<a href="${p.href}"${p.id === (page === 'work' ? 'portfolio' : page) ? ' class="current" aria-current="page"' : ''}>${p.label}</a>`).join('') +
       `</nav>`;
   }
 
@@ -32,6 +32,7 @@
 
   const NEXT = {
     portfolio: { href: 'hobbies.html', k: 'NEXT STOP · 下一站', t: '興趣愛好', a: '→' },
+    work: { href: 'portfolio.html', k: 'BACK · 返回', t: '回到作品集', a: '↺' },
     hobbies: { href: 'certificates.html', k: 'NEXT STOP · 下一站', t: '證照', a: '→' },
     certificates: { href: 'index.html', k: 'BACK TO ORBIT · 返回', t: '回到首頁', a: '↺' }
   };
@@ -54,7 +55,7 @@
 
   /* ---------- Lightbox ---------- */
   let lb;
-  function openLightbox(src, alt) {
+  function openLightbox(src, alt, wide) {
     if (!lb) {
       lb = document.createElement('div');
       lb.className = 'lightbox';
@@ -65,6 +66,7 @@
     }
     const im = lb.querySelector('img');
     im.src = src; im.alt = alt || '';
+    lb.classList.toggle('wide', !!wide);
     lb.classList.add('open');
   }
 
@@ -121,23 +123,119 @@
     const COL = {};
     found.forEach((c, i) => { COL[c] = PALETTE[i % PALETTE.length]; });
     const cats = ['全部', ...found];
-    let cur = '全部';
+    const wanted = new URLSearchParams(location.hash.slice(1)).get('cat');
+    let cur = cats.includes(wanted) ? wanted : '全部';
     const chips = $('#chips'), grid = $('#grid');
+
+    const card = (p) => {
+      const [c, d] = COL[p.category] || PALETTE[0];
+      const n = (p.items || []).length;
+      const job = p.job ? `<div class="job"><b>工作</b>${esc(p.job)}</div>` : '';
+      return `<article class="project" style="--c:${c}">` +
+        `<div class="frame">${media(p.img, p.title, c, d)}</div>` +
+        `<div class="body"><div class="meta"><span class="cat">${esc(p.category)}</span><span class="year">${esc(p.year)}</span></div>` +
+        `<h3>${esc(p.title)}</h3>${job}<p>${esc(p.description)}</p>` +
+        `<div class="tags">${(p.tags || []).map((t) => `<span>${esc(t)}</span>`).join('')}</div>` +
+        `<a class="view" href="work.html?w=${S.projects.indexOf(p)}">查看${n ? ` ${n} 件` : ''}作品 →</a></div></article>`;
+    };
     function render() {
-      chips.innerHTML = cats.map((c) => `<button class="chip${c === cur ? ' on' : ''}" aria-pressed="${c === cur}" data-c="${c}">${c}</button>`).join('');
-      const list = cur === '全部' ? S.projects : S.projects.filter((p) => p.category === cur);
-      grid.innerHTML = list.map((p) => {
-        const [c, d] = COL[p.category] || PALETTE[0];
-        const link = p.url ? `<a class="view" href="${esc(p.url)}" target="_blank" rel="noopener">查看專案 →</a>` : `<a class="view" aria-disabled="true">查看專案 →</a>`;
-        return `<article class="project" style="--c:${c}">` +
-          `<div class="frame">${media(p.img, p.title, c, d)}</div>` +
-          `<div class="body"><div class="meta"><span class="cat">${esc(p.category)}</span><span class="year">${esc(p.year)}</span></div>` +
-          `<h3>${esc(p.title)}</h3><p>${esc(p.description)}</p>` +
-          `<div class="tags">${p.tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div>${link}</div></article>`;
-      }).join('');
+      chips.innerHTML = cats.map((c) => `<button class="chip${c === cur ? ' on' : ''}" aria-pressed="${c === cur}" data-c="${esc(c)}">${esc(c)}</button>`).join('');
+      grid.innerHTML = (cur === '全部' ? S.projects : S.projects.filter((p) => p.category === cur)).map(card).join('');
     }
-    chips.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { cur = b.dataset.c; render(); } });
+    chips.addEventListener('click', (e) => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      cur = b.dataset.c;
+      history.replaceState(null, '', cur === '全部' ? location.pathname + location.search : '#' + new URLSearchParams({ cat: cur }));
+      render();
+    });
     render();
+  }
+
+  /* ---------- Work detail (the page behind a portfolio card) ---------- */
+  if (page === 'work') {
+    const w = new URLSearchParams(location.search).get('w');
+    const p = /^\d+$/.test(w || '') ? S.projects[+w] : null;
+    if (!p) { location.replace('portfolio.html'); return; }
+    const PALETTE = ['#e8b06a', '#2ec4b6', '#c3b9de', '#ffd23f', '#ff8a4c'];
+    const found = [...new Set(S.projects.map((x) => x.category))];
+    const c = PALETTE[found.indexOf(p.category) % PALETTE.length];
+    const items = p.items || [];
+    const view = (o, label) => (o.url ? `<a class="view" href="${esc(o.url)}" target="_blank" rel="noopener">${label}</a>` : '');
+    const jobLine = (o) => (o.job ? `<div class="job"><b>工作</b>${esc(o.job)}</div>` : '');
+
+    document.title = `${p.title} · ${P.name}`;
+    $('#work-back').href = 'portfolio.html#' + new URLSearchParams({ cat: p.category });
+    const details = `${p.description ? `<p>${esc(p.description)}</p>` : ''}${jobLine(p)}` +
+      `<div class="tags">${(p.tags || []).map((t) => `<span>${esc(t)}</span>`).join('')}</div>${view(p, '相關連結 →')}`;
+    if (items.some((o) => o.view === 'slides')) {
+      // 簡報頁：標題縮成一行，把畫面留給簡報，說明移到下方
+      $('.work-main').classList.add('has-slides');
+      $('#work-head').innerHTML = `<div class="work-top" style="--c:${c}"><span class="cat">${esc(p.category)}</span><h1>${esc(p.title)}</h1></div>`;
+      $('.work-top').prepend($('#work-back'));
+      $('#work-notes').innerHTML = `<div class="work-head" style="--c:${c}">${details}</div>`;
+    } else {
+      $('#work-head').innerHTML = `<div class="work-head" style="--c:${c}"><span class="cat">${esc(p.category)}</span><h1>${esc(p.title)}</h1>${details}</div>`;
+    }
+
+    const pages = (o) => [o.img, ...(o.more || []).map((m) => m.img)].filter(Boolean);
+    const pics = (o) => {
+      const all = pages(o);
+      if (!all.length) return '';
+      const nav = all.length > 1
+        ? `<button class="work-nav prev" data-d="-1" aria-label="上一張">‹</button><button class="work-nav next" data-d="1" aria-label="下一張">›</button><span class="work-count">1 / ${all.length}</span>`
+        : '';
+      const strip = o.view === 'slides' && all.length > 1
+        ? `<div class="slide-thumbs">${all.map((src, i) => `<button class="slide-thumb${i ? '' : ' on'}" data-i="${i}" aria-label="第 ${i + 1} 頁"><img src="${esc(src)}" alt="" loading="lazy"></button>`).join('')}</div>`
+        : '';
+      return `<div class="work-pics" data-pics="${esc(JSON.stringify(all))}" data-i="0">` +
+        `<button class="work-zoom" data-src="${esc(all[0])}" data-alt="${esc(o.title)}"${o.view === 'slides' ? ' data-wide="1"' : ''} aria-label="放大查看${esc(o.title)}"><img class="work-img" src="${esc(all[0])}" alt="${esc(o.title)}"></button>${nav}</div>${strip}`;
+    };
+
+    const process = (o) => {
+      const steps = (o.process || []).filter((x) => x.img);
+      if (!steps.length) return '';
+      return `<div class="work-process"><b class="work-process-title">設計歷程</b><ol>` + steps.map((x, i) =>
+        `<li><button class="work-zoom" data-src="${esc(x.img)}" data-alt="第 ${i + 1} 版" aria-label="放大查看第 ${i + 1} 版"><img class="work-img" src="${esc(x.img)}" alt="第 ${i + 1} 版"></button>` +
+        `<span class="work-step">第 ${i + 1} 版</span>${x.note ? `<p>${esc(x.note)}</p>` : ''}</li>`).join('') + `</ol></div>`;
+    };
+
+    const grid = $('#work-grid');
+    grid.innerHTML = items.length
+      ? items.map((o) => `<article class="work${o.view === 'slides' ? ' slides' : ''}">` +
+          pics(o) +
+          `<div class="work-body">${o.title ? `<h3>${esc(o.title)}</h3>` : ''}${jobLine(o)}${o.description ? `<p>${esc(o.description)}</p>` : ''}${(o.view === 'slides' && /\.pdf$/i.test(o.url || '') ? `<a class="view" href="${esc(o.url)}" download="${esc(o.title)}.pdf">下載完整 PDF ↓</a>` : view(o, /\.pdf$/i.test(o.url || '') ? '查看完整報告 →' : '查看連結 →'))}${process(o)}</div></article>`).join('')
+      : '<p class="work-empty">作品整理中，敬請期待。</p>';
+    function goTo(box, to) {
+      const all = JSON.parse(box.dataset.pics);
+      const i = (to + all.length) % all.length;
+      const zoom = box.querySelector('.work-zoom');
+      box.dataset.i = i;
+      zoom.dataset.src = all[i];
+      zoom.querySelector('img').src = all[i];
+      box.querySelector('.work-count').textContent = `${i + 1} / ${all.length}`;
+      new Image().src = all[(i + 1) % all.length];
+      const strip = box.nextElementSibling;
+      if (strip && strip.classList.contains('slide-thumbs')) {
+        strip.querySelectorAll('.slide-thumb').forEach((b, k) => b.classList.toggle('on', k === i));
+        const on = strip.children[i];
+        strip.scrollLeft = on.offsetLeft - strip.offsetLeft - (strip.clientWidth - on.offsetWidth) / 2;
+      }
+    }
+    grid.addEventListener('click', (e) => {
+      const n = e.target.closest('.work-nav');
+      if (n) { const box = n.parentElement; goTo(box, +box.dataset.i + +n.dataset.d); return; }
+      const t = e.target.closest('.slide-thumb');
+      if (t) { goTo(t.parentElement.previousElementSibling, +t.dataset.i); return; }
+      const z = e.target.closest('.work-zoom');
+      if (z) openLightbox(z.dataset.src, z.dataset.alt, z.dataset.wide);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      const box = document.querySelector('.work.slides .work-pics');
+      if (!box || document.querySelector('.lightbox.open')) return;
+      goTo(box, +box.dataset.i + (e.key === 'ArrowRight' ? 1 : -1));
+    });
   }
 
   /* ---------- Hobbies ---------- */

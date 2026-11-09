@@ -103,66 +103,231 @@ window.SITE = {
       "category": "AI 應用",
       "year": "",
       "title": "AI × MCP 郵件自動化",
-      "description": "串接 Notion、Canva、Gmail，讓 AI 依收件人客製多份郵件並存成草稿，人工確認後再送出，省下大量重複撰寫時間。",
+      "description": "串接Gmail，讓 AI 依收件人客製多份郵件並存成草稿，人工確認後再送出，省下大量重複撰寫時間。",
       "tags": [
         "MCP",
         "Gmail",
-        "Notion"
+        "Excel"
       ],
       "img": "",
-      "url": ""
+      "url": "",
+      "type": "自動化工具",
+      "job": "證券研究社 · 社長"
     },
     {
       "category": "AI 應用",
       "year": "",
-      "title": "一份內容，多平台文案",
+      "title": "自動化宣傳",
       "description": "提供活動內容給 AI，自動生成 FB 貼文、LINE 訊息與 email 三種版本的文案，讓宣傳更快、更一致。",
       "tags": [
         "AI 文案",
-        "FB",
-        "LINE"
+        "AI表單",
+        "line",
+        "fb",
+        "AI自動化"
       ],
       "img": "",
-      "url": ""
-    },
-    {
-      "category": "設計",
-      "year": "",
-      "title": "證券研究社視覺設計",
-      "description": "擔任行銷部儲幹期間，設計社團 FB、IG 貼文，以及營服與徽章（有 AI 輔助）。",
-      "tags": [
-        "Canva",
-        "社群貼文",
-        "周邊設計"
-      ],
-      "img": "",
-      "url": ""
+      "url": "",
+      "type": "自動化工具",
+      "job": "富邦人壽 · 實習生"
     },
     {
       "category": "行銷",
       "year": "",
-      "title": "北大阿默實習商店行銷",
-      "description": "撰寫有溫度的商品文案、設計商務風海報，並操作 LINE 官方帳號經營顧客。",
+      "title": "社群貼文",
+      "description": "",
       "tags": [
         "文案",
-        "海報",
-        "LINE OA"
+        "圖片",
+        "AI創作"
       ],
       "img": "",
-      "url": ""
+      "url": "",
+      "type": "",
+      "job": "",
+      "items": [
+        {
+          "title": "2026 投資理財營：講師介紹",
+          "job": "證券研究社 · 行銷部儲幹",
+          "description": "",
+          "img": "images/projects/finance-camp-2026-1.jpg",
+          "url": "",
+          "more": [
+            {
+              "img": "images/projects/finance-camp-2026-2.jpg"
+            },
+            {
+              "img": "images/projects/finance-camp-2026-3.jpg"
+            }
+          ]
+        },
+        {
+          "title": "第四堂社課：產業研究課程",
+          "job": "證券研究社 · 行銷部儲幹",
+          "description": "",
+          "img": "images/projects/club-class-4-industry-research.jpg",
+          "url": ""
+        },
+        {
+          "title": "第八堂社課：成果發表",
+          "job": "證券研究社 · 行銷部儲幹",
+          "description": "",
+          "img": "images/projects/club-class-8-research-presentation.jpg",
+          "url": ""
+        }
+      ]
     },
     {
-      "category": "程式",
+      "category": "行銷",
       "year": "",
-      "title": "太空主題個人網站",
-      "description": "就是你正在看的這個網站：以 HTML、CSS、JavaScript 打造，部署在 GitHub Pages，內含隕石小遊戲。",
+      "title": "海報&文宣品設計",
+      "description": "",
       "tags": [
-        "HTML",
-        "CSS",
-        "JavaScript"
+        "AI創作",
+        "海報",
+        "徽章"
       ],
       "img": "",
-      "url": "https://github.com/Jenny-ai1/portfolio"
+      "url": "",
+      "type": "",
+      "job": "",
+      "items": [
+        {
+          "title": "流程圖設計",
+          "job": "北大阿默實習商店 · 實習",
+          "description": "",
+          "img": "images/projects/amo-numbird-stamp-card-flow.jpg",
+          "more": [
+            {
+              "img": "images/projects/amo-nidin-online-order-flow.jpg"
+            }
+          ],
+          "process": [],
+          "url": ""
+        },
+        {
+          "title": "海報設計",
+          "job": "北大阿默實習商店 · 實習",
+          "description": "",
+          "img": "images/projects/amo-fenglu-moon-poster.jpg",
+          "more": [
+            {
+              "img": "images/projects/amo-store-poster-blue.jpg"
+            }
+          ],
+          "process": [],
+          "url": ""
+        }
+      ]
+    },
+    {
+      "category": "證券",
+      "type": "研究報告",
+      "job": "證券研究社 · 行銷部儲幹",
+      "year": "",
+      "title": "產業研究",
+      "description": "以營建產業為研究主題，最後選定華固建設作為研究標的。我主要負責公司面分析與財報預測。",
+      "tags": [
+        "股票",
+        "營建業",
+        "華固"
+      ],
+      "img": "",
+      "url": "",
+      "items": [
+        {
+          "title": "華固（2548）產業研究報告",
+          "job": "證券研究社 · 行銷部儲幹",
+          "description": "完整報告共 28 頁，涵蓋營建產業鏈與前景、華固公司概況、未來建案與財報預測。",
+          "img": "images/projects/huaku-report/p01.jpg",
+          "more": [
+            {
+              "img": "images/projects/huaku-report/p02.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p03.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p04.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p05.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p06.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p07.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p08.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p09.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p10.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p11.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p12.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p13.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p14.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p15.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p16.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p17.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p18.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p19.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p20.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p21.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p22.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p23.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p24.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p25.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p26.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p27.jpg"
+            },
+            {
+              "img": "images/projects/huaku-report/p28.jpg"
+            }
+          ],
+          "process": [],
+          "url": "files/construction-industry-research.pdf",
+          "view": "slides"
+        }
+      ]
     }
   ],
   "hobbies": [
