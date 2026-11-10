@@ -4,6 +4,10 @@
   const page = document.body.dataset.page;
 
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // AI 協作標記：作品設 ai: true，或履歷那一行結尾寫「（有 AI 輔助）」就會自動變成這個小標
+  const AI_MARK = '<span class="ai-mark" title="這項工作有使用 AI 工具協作完成"><b>AI</b>協作</span>';
+  const AI_NOTE = /\s*[（(]\s*(有\s*)?AI\s*(輔助|協作)\s*[)）]\s*$/i;
+  const aiLine = (x) => (AI_NOTE.test(x) ? `${esc(x.replace(AI_NOTE, ''))}${AI_MARK}` : esc(x));
   const $ = (sel) => document.querySelector(sel);
 
   const PAGES = [
@@ -141,8 +145,8 @@
     $('#about-text').textContent = P.about;
     if (P.photo) $('#about-photo').innerHTML = `<img src="${esc(P.photo)}" alt="${esc(P.name)}">`;
     const desc = (d) => Array.isArray(d)
-      ? `<ul>${d.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`
-      : (d ? `<span>${esc(d)}</span>` : '');
+      ? `<ul>${d.map((x) => `<li>${aiLine(x)}</li>`).join('')}</ul>`
+      : (d ? `<span>${aiLine(d)}</span>` : '');
     const rows = (list) => list.map((e) =>
       `<div class="cv-row${e.time ? '' : ' no-time'}">` +
       (e.time ? `<span class="time">${esc(e.time)}</span>` : '') +
@@ -202,7 +206,8 @@
     const c = PALETTE[found.indexOf(p.category) % PALETTE.length];
     const items = p.items || [];
     const view = (o, label) => (o.url ? `<a class="view" href="${esc(o.url)}" target="_blank" rel="noopener">${label}</a>` : '');
-    const jobLine = (o) => (o.job ? `<div class="job"><b>工作</b>${esc(o.job)}</div>` : '');
+    const jobLine = (o) => (o.job || o.ai
+      ? `<div class="work-marks">${o.job ? `<div class="job"><b>工作</b>${esc(o.job)}</div>` : ''}${o.ai ? AI_MARK : ''}</div>` : '');
 
     document.title = `${p.title} · ${P.name}`;
     $('#work-back').href = 'portfolio.html#' + new URLSearchParams({ cat: p.category });

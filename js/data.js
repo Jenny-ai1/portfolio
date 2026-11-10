@@ -273,7 +273,8 @@ window.SITE = {
         {
           "title": "時事文：美國 CPI 超預期",
           "job": "證券研究社 · 社長",
-          "description": "原文由教學長撰寫，我負責將長篇時事分析重新架構、設計成 8 頁的貼文，讓社員更容易閱讀（有 AI 輔助）。",
+          "description": "原文由教學長撰寫，我負責將長篇時事分析重新架構、設計成 8 頁的貼文，讓社員更容易閱讀。",
+          "ai": true,
           "img": "images/projects/cpi-2026-10/p1.jpg",
           "more": [
             {
@@ -304,6 +305,7 @@ window.SITE = {
         {
           "title": "2026 投資理財營：講師介紹",
           "job": "證券研究社 · 行銷部儲幹",
+          "ai": true,
           "description": "",
           "img": "images/projects/finance-camp-2026-1.jpg",
           "url": "",
@@ -320,6 +322,7 @@ window.SITE = {
         {
           "title": "第四堂社課：產業研究課程",
           "job": "證券研究社 · 行銷部儲幹",
+          "ai": true,
           "description": "",
           "img": "images/projects/club-class-4-industry-research.jpg",
           "url": "",
@@ -329,6 +332,7 @@ window.SITE = {
         {
           "title": "第八堂社課：成果發表",
           "job": "證券研究社 · 行銷部儲幹",
+          "ai": true,
           "description": "",
           "img": "images/projects/club-class-8-research-presentation.jpg",
           "url": "",
@@ -356,6 +360,7 @@ window.SITE = {
         {
           "title": "營服設計",
           "job": "證券研究社 · 行銷部儲幹",
+          "ai": true,
           "description": "為投資理財營設計的營服(最後有做成營服)。正面左胸的主體是一個牛頭，代表牛市；上升箭頭和一組堆高的金幣，代表股票飆漲、投資人賺大錢！背面想表達的是「加入我們，在牛市裡開槓桿賺大錢！」：翹翹板就是槓桿，以小撬動大，旁邊是上漲的走勢線，呼應牛市與投資理財的主題。",
           "img": "images/projects/finance-camp-2026-tshirt.jpg",
           "more": [],
@@ -365,6 +370,7 @@ window.SITE = {
         {
           "title": "徽章設計",
           "job": "證券研究社 · 行銷部儲幹",
+          "ai": true,
           "description": "圖片的設計理念請參考營服。第一張黑底金色款有被選上，最後有實際做出此徽章。",
           "img": "images/projects/ntpu-sss-badge-gold.jpg",
           "more": [

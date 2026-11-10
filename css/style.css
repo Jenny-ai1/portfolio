@@ -672,3 +672,11 @@ button { font-family: inherit; }
 .cv-row .what ul { margin: 4px 0 0; padding-left: 1.2em; font-size: 14px; line-height: 1.7; color: var(--muted-2); }
 .cv-row .what ul li::marker { color: var(--red); }
 .cert .stub b.check { font-size: clamp(24px, 3cqw, 30px); }
+
+/* AI 協作標記：作品（ai: true）與履歷中「（有 AI 輔助）」的那一行 */
+.work-marks { align-self: flex-start; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.work-marks + p { margin-top: 6px; }
+.ai-mark { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 999px; background: #ebe5f7; color: var(--muted-2); font: 500 12px/1.5 var(--font-tc); white-space: nowrap; }
+.ai-mark b { margin-right: 6px; font: 700 12px/1.5 var(--font-en); color: #7a6db0; }
+.cv-row .what .ai-mark { margin-left: 8px; padding: 0 9px; font-size: 11px; color: var(--muted-2); vertical-align: 1px; }
+.cv-row .what .ai-mark b { display: inline; font-size: 11px; margin-right: 4px; }
