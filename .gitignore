@@ -1,3 +1,5 @@
 mockups/
 *.zip
 .claude/
+*.bak
+originals/

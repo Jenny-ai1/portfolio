@@ -103,39 +103,163 @@ window.SITE = {
       "category": "AI 應用",
       "year": "",
       "title": "AI × MCP 郵件自動化",
-      "description": "串接Gmail，讓 AI 依收件人客製多份郵件並存成草稿，人工確認後再送出，省下大量重複撰寫時間。",
+      "description": "用在社課的補課表單：依社員的補課申請，讓 AI 透過 MCP 串接 Gmail，整理出每堂課的補課信並存成草稿，人工確認後再送出，省下大量重複撰寫時間。",
       "tags": [
         "MCP",
         "Gmail",
-        "Excel"
+        "Excel",
+        "補課表單"
       ],
       "img": "",
       "url": "",
       "type": "自動化工具",
-      "job": "證券研究社 · 社長"
+      "job": "證券研究社 · 社長",
+      "items": [
+        {
+          "title": "社課補課表單：補課信自動化",
+          "job": "證券研究社 · 社長",
+          "description": "社員錯過社課時會填寫補課表單。我把申請名單交給 AI，透過 MCP 串接社團 Gmail，自動整理出每堂課的補課信並存成草稿，確認後再寄出。",
+          "img": "",
+          "more": [],
+          "process": [],
+          "url": "",
+          "view": "flow",
+          "flow": {
+            "why": "每堂社課都有社員請假，需要寄補課資料給他們。原本要逐一查名單、按場次分好、附上影片與講義，再一封封寫信，很花時間，也容易寄錯堂或漏寄email。",
+            "inputs": [
+              "補課表單的申請名單（Excel）",
+              "各堂課的補課影片連結",
+              "各堂課的 PDF 講義"
+            ],
+            "aiNote": "透過 MCP 串接 Gmail",
+            "outputs": [
+              {
+                "icon": "📋",
+                "title": "依場次整理名單",
+                "sub": "自動分組，不用手動篩選",
+                "points": [
+                  "AI 讀取補課表單的申請資料",
+                  "依申請的場次把社員分組，一堂課對應一組收件人",
+                  "不會漏掉人，也不會寄錯堂"
+                ]
+              },
+              {
+                "icon": "✉️",
+                "title": "每堂一封補課信",
+                "sub": "資料備齊，一封信就能補完課",
+                "points": [
+                  "放入該堂的補課影片連結與 PDF 講義",
+                  "收件人放在密件副本，彼此看不到信箱"
+                ]
+              },
+              {
+                "icon": "📥",
+                "title": "Gmail 草稿",
+                "sub": "直接寫進信箱，不用複製貼上",
+                "points": [
+                  "AI 透過 MCP 串接社團 Gmail，直接建立草稿",
+                  "不用一封封手動開新信、貼內容、加附件",
+                  "人工確認草稿內容後才寄出"
+                ]
+              }
+            ],
+            "rules": [
+              "人工把關：AI 只建立草稿，確認內容後才寄出",
+              "不漏寄：事先訂好寄信規範，哪些人該寄，哪些人該寄哪份檔案......，AI 照規範產出，減少AI自行判斷，比較不用擔心會有錯漏",
+              "一堂一封：依場次分開寄，每封只放該堂的資料，不會混淆"
+            ],
+            "impact": [
+              "從逐封撰寫變成確認草稿，省下大量重複撰寫時間",
+              "收件人與資料由 AI 依名單整理，減少寄錯或漏寄"
+            ]
+          }
+        }
+      ]
     },
     {
       "category": "AI 應用",
       "year": "",
       "title": "自動化宣傳",
-      "description": "提供活動內容給 AI，自動生成 FB 貼文、LINE 訊息與 email 三種版本的文案，讓宣傳更快、更一致。",
+      "description": "把活動招募的宣傳流程寫成一份給 AI 的標準指令。輸入活動資訊，就能一次產出報名表單、LINE 邀請與錄取通知信。",
       "tags": [
         "AI 文案",
         "AI表單",
         "line",
-        "fb",
         "AI自動化"
       ],
       "img": "",
       "url": "",
       "type": "自動化工具",
-      "job": "富邦人壽 · 實習生"
+      "job": "富邦人壽 · 實習生",
+      "items": [
+        {
+          "title": "活動招募：AI 宣傳文案助手",
+          "job": "富邦人壽 · 實習生",
+          "description": "我把整個招募宣傳流程寫成一份給 AI 的標準指令（prompt）。之後每辦一場活動，只要提供三項資訊，就能一次拿到報名表單、LINE 邀請訊息與錄取通知信，複製就能用。",
+          "img": "",
+          "more": [],
+          "process": [],
+          "url": "",
+          "view": "flow",
+          "flow": {
+            "why": "實習期間需要為多場活動招募參加者。每一場都要做報名表、發 LINE 邀請、寄錄取通知，內容大同小異卻得從頭寫，花時間，也容易漏掉資訊或語氣不一致。",
+            "inputs": [
+              "活動名稱",
+              "活動 DM（文字或圖片）",
+              "活動大致內容"
+            ],
+            "outputs": [
+              {
+                "icon": "📝",
+                "title": "Google 報名表單",
+                "sub": "自動建立，不用手動設定題目",
+                "points": [
+                  "AI 產出一段程式碼，貼上執行就自動建好 Google 表單",
+                  "內建常用題目（姓名、聯絡方式、報名動機等），再依活動加題，例如場次、飲食限制",
+                  "限登入 Google 帳號才能填寫，減少重複或亂填"
+                ]
+              },
+              {
+                "icon": "💬",
+                "title": "LINE 邀請訊息",
+                "sub": "寫好就能發，不用每次重想文案",
+                "points": [
+                  "AI 依活動內容寫好邀請訊息，複製就能直接發到群組",
+                  "內含活動亮點、時間地點與報名連結，看完就能報名",
+                  "分段搭配表情符號，並依時節調整開場，確保易讀、不會每份長得太像"
+                ]
+              },
+              {
+                "icon": "✉️",
+                "title": "錄取通知 Email",
+                "sub": "錄取後馬上通知，不用逐封撰寫",
+                "points": [
+                  "AI 依活動資訊寫好錄取通知信，自動存成 Gmail 草稿",
+                  "固定架構，以免漏掉重要資訊",
+                  "人工確認後才寄出，避免寄錯人或內容出錯"
+                ]
+              }
+            ],
+            "rules": [
+              "人工把關：信件一律先存成 Gmail 草稿，確認後才寄出，避免 AI 誤寄",
+              "資訊串接：表單建好後把連結貼回，AI 自動放進 LINE 訊息與 Email",
+              "不亂編：缺少的時間、地點用【】標示，並列出還缺哪些資訊",
+              "看得懂圖片：直接上傳活動 DM，AI 會讀出標語、時間地點與風格"
+            ],
+            "impact": [
+              "每場活動不用再從零撰寫，備好資訊就能一次拿到三份內容",
+              "表單、訊息與信件格式一致，對外溝通更統一",
+              "AI 負責起草、人負責確認，兼顧速度與正確性"
+            ]
+          }
+        }
+      ]
     },
     {
       "category": "行銷",
       "year": "",
       "title": "社群貼文",
-      "description": "",
+      "description": "撰寫過的社群貼文",
       "tags": [
         "文案",
         "圖片",
@@ -146,6 +270,37 @@ window.SITE = {
       "type": "",
       "job": "",
       "items": [
+        {
+          "title": "時事文：美國 CPI 超預期",
+          "job": "證券研究社 · 社長",
+          "description": "原文由教學長撰寫，我負責將長篇時事分析重新架構、設計成 8 頁的貼文，讓社員更容易閱讀（有 AI 輔助）。",
+          "img": "images/projects/cpi-2026-10/p1.jpg",
+          "more": [
+            {
+              "img": "images/projects/cpi-2026-10/p2.jpg"
+            },
+            {
+              "img": "images/projects/cpi-2026-10/p3.jpg"
+            },
+            {
+              "img": "images/projects/cpi-2026-10/p4.jpg"
+            },
+            {
+              "img": "images/projects/cpi-2026-10/p5.jpg"
+            },
+            {
+              "img": "images/projects/cpi-2026-10/p6.jpg"
+            },
+            {
+              "img": "images/projects/cpi-2026-10/p7.jpg"
+            },
+            {
+              "img": "images/projects/cpi-2026-10/p8.jpg"
+            }
+          ],
+          "process": [],
+          "url": ""
+        },
         {
           "title": "2026 投資理財營：講師介紹",
           "job": "證券研究社 · 行銷部儲幹",
@@ -159,21 +314,26 @@ window.SITE = {
             {
               "img": "images/projects/finance-camp-2026-3.jpg"
             }
-          ]
+          ],
+          "process": []
         },
         {
           "title": "第四堂社課：產業研究課程",
           "job": "證券研究社 · 行銷部儲幹",
           "description": "",
           "img": "images/projects/club-class-4-industry-research.jpg",
-          "url": ""
+          "url": "",
+          "more": [],
+          "process": []
         },
         {
           "title": "第八堂社課：成果發表",
           "job": "證券研究社 · 行銷部儲幹",
           "description": "",
           "img": "images/projects/club-class-8-research-presentation.jpg",
-          "url": ""
+          "url": "",
+          "more": [],
+          "process": []
         }
       ]
     },
@@ -195,7 +355,7 @@ window.SITE = {
         {
           "title": "流程圖設計",
           "job": "北大阿默實習商店 · 實習",
-          "description": "",
+          "description": "跟不同廠商合作時，為方便向顧客講解該如何操作的使用說明。像是：如何兌換點數(第一張圖)、如何線上下訂單(第二張圖)。",
           "img": "images/projects/amo-numbird-stamp-card-flow.jpg",
           "more": [
             {
@@ -208,11 +368,24 @@ window.SITE = {
         {
           "title": "海報設計",
           "job": "北大阿默實習商店 · 實習",
-          "description": "",
+          "description": "宣傳商店的海報。第一張圖片是為了社區快閃宣傳。",
           "img": "images/projects/amo-fenglu-moon-poster.jpg",
           "more": [
             {
               "img": "images/projects/amo-store-poster-blue.jpg"
+            }
+          ],
+          "process": [],
+          "url": ""
+        },
+        {
+          "title": "徽章設計",
+          "job": "證券研究社 · 行銷部儲幹",
+          "description": "第一張黑底金色款有被選上，最後有實際做出此徽章。",
+          "img": "images/projects/ntpu-sss-badge-gold.jpg",
+          "more": [
+            {
+              "img": "images/projects/ntpu-sss-badge-navy.jpg"
             }
           ],
           "process": [],
@@ -337,14 +510,6 @@ window.SITE = {
       "description": "",
       "color": "#2ec4b6",
       "darkColor": "#1f8f85",
-      "img": ""
-    },
-    {
-      "title": "",
-      "fact": "",
-      "description": "",
-      "color": "#ff8a4c",
-      "darkColor": "#e0532a",
       "img": ""
     },
     {

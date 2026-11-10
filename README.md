@@ -9,6 +9,12 @@
 - `files/` 放 CV PDF（在 data.js 的 `cvPdf` 填入 `files/cv.pdf`，下載按鈕就會啟用）
 - `mockups/` 原始設計檔（上線時不需要上傳）
 
+## 用編輯器改內容（不用碰程式碼）
+```
+python editor/server.py
+```
+打開 http://localhost:8766/editor/ ，左邊改字、按「儲存」（或 Ctrl+S），右邊預覽就會更新，資料會寫回 `js/data.js`。
+
 ## 在電腦上預覽
 ```
 python -m http.server 8765

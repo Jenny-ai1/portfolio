@@ -70,23 +70,28 @@
     lb.classList.add('open');
   }
 
-  /* ---------- CV download buttons ---------- */
+  /* ---------- CV buttons: data-cv="preview" opens the PDF, data-cv="download" saves it ---------- */
   const CV_LANGS = [
-    { file: P.cvPdf, label: '中文 CV ↓', name: `${P.name}_CV.pdf`, lang: 'zh-Hant' },
-    { file: P.cvPdfEn, label: 'English CV ↓', name: 'Janelee_CV.pdf', lang: 'en' }
+    { file: P.cvPdf, preview: '預覽中文 CV →', download: '下載中文 CV ↓', name: `${P.name}_CV.pdf`, lang: 'zh-Hant' },
+    { file: P.cvPdfEn, preview: 'Preview English CV →', download: 'Download English CV ↓', name: 'Janelee_CV.pdf', lang: 'en' }
   ];
   document.querySelectorAll('[data-cv]').forEach((a) => {
+    const isPreview = a.dataset.cv === 'preview';
     const group = document.createElement('div');
     group.className = 'cv-pick';
     group.setAttribute('role', 'group');
-    group.setAttribute('aria-label', '下載 CV');
+    group.setAttribute('aria-label', isPreview ? '預覽 CV' : '下載 CV');
     if (a.getAttribute('style')) group.setAttribute('style', a.getAttribute('style'));
     CV_LANGS.forEach((c) => {
       const b = document.createElement('a');
       b.className = a.className;
-      b.textContent = c.label;
+      b.textContent = isPreview ? c.preview : c.download;
       b.lang = c.lang;
-      if (c.file) { b.href = c.file; b.setAttribute('download', c.name); }
+      if (c.file) {
+        b.href = c.file;
+        if (isPreview) { b.target = '_blank'; b.rel = 'noopener'; }
+        else b.setAttribute('download', c.name);
+      }
       else { b.setAttribute('aria-disabled', 'true'); b.title = '尚未上傳 CV'; }
       group.appendChild(b);
     });
@@ -200,11 +205,34 @@
         `<span class="work-step">第 ${i + 1} 版</span>${x.note ? `<p>${esc(x.note)}</p>` : ''}</li>`).join('') + `</ol></div>`;
     };
 
+    // 流程圖版面：輸入 → AI → 多份產出，加上規則
+    const flow = (o) => {
+      const f = o.view === 'flow' && o.flow;
+      if (!f) return '';
+      const inputs = (f.inputs || []).filter(Boolean).map((t, i) => `<li><span>${i + 1}</span>${esc(t)}</li>`).join('');
+      const outputs = (f.outputs || []).map((x, i) =>
+        `<li class="flow-out" style="--k:${['#e8b06a', '#2ec4b6', '#c3b9de', '#ff8a4c'][i % 4]}">` +
+        `<div class="flow-out-head"><span class="flow-icon" aria-hidden="true">${esc(x.icon || '')}</span><div><b>${esc(x.title)}</b>${x.sub ? `<small>${esc(x.sub)}</small>` : ''}</div></div>` +
+        `<ul>${(x.points || []).filter(Boolean).map((p) => `<li>${esc(p)}</li>`).join('')}</ul></li>`).join('');
+      const rules = (f.rules || []).filter(Boolean).map((t) => `<li>${esc(t)}</li>`).join('');
+      const impact = (f.impact || []).filter(Boolean).map((t) => `<li>${esc(t)}</li>`).join('');
+      return `<div class="flow">` +
+        (f.why ? `<div class="flow-why"><b class="flow-label">為什麼做</b><p>${esc(f.why)}</p></div>` : '') +
+        `<div class="flow-stage flow-in"><b class="flow-label">輸入</b><ol>${inputs}</ol></div>` +
+        `<div class="flow-arrow" aria-hidden="true"></div>` +
+        `<div class="flow-stage flow-ai"><span class="flow-core">AI</span><small>${esc(f.aiNote || `一次產出 ${(f.outputs || []).length} 份`)}</small></div>` +
+        `<div class="flow-arrow" aria-hidden="true"></div>` +
+        `<ol class="flow-outs">${outputs}</ol>` +
+        (rules ? `<div class="flow-rules"><b class="flow-label">設計重點</b><ul>${rules}</ul></div>` : '') +
+        (impact ? `<div class="flow-impact"><b class="flow-label">成效</b><ul>${impact}</ul></div>` : '') +
+        `</div>`;
+    };
+
     const grid = $('#work-grid');
     grid.innerHTML = items.length
-      ? items.map((o) => `<article class="work${o.view === 'slides' ? ' slides' : ''}">` +
+      ? items.map((o) => `<article class="work${o.view === 'slides' ? ' slides' : ''}${o.view === 'flow' ? ' is-flow' : ''}">` +
           pics(o) +
-          `<div class="work-body">${o.title ? `<h3>${esc(o.title)}</h3>` : ''}${jobLine(o)}${o.description ? `<p>${esc(o.description)}</p>` : ''}${(o.view === 'slides' && /\.pdf$/i.test(o.url || '') ? `<a class="view" href="${esc(o.url)}" download="${esc(o.title)}.pdf">下載完整 PDF ↓</a>` : view(o, /\.pdf$/i.test(o.url || '') ? '查看完整報告 →' : '查看連結 →'))}${process(o)}</div></article>`).join('')
+          `<div class="work-body">${o.title ? `<h3>${esc(o.title)}</h3>` : ''}${jobLine(o)}${o.description ? `<p>${esc(o.description)}</p>` : ''}${(o.view === 'slides' && /\.pdf$/i.test(o.url || '') ? `<a class="view" href="${esc(o.url)}" download="${esc(o.title)}.pdf">下載完整 PDF ↓</a>` : view(o, /\.pdf$/i.test(o.url || '') ? '查看完整報告 →' : '查看連結 →'))}${process(o)}</div>${flow(o)}</article>`).join('')
       : '<p class="work-empty">作品整理中，敬請期待。</p>';
     function goTo(box, to) {
       const all = JSON.parse(box.dataset.pics);
@@ -243,7 +271,7 @@
     $('#grid').innerHTML = S.hobbies.map((h) =>
       `<div class="hobby" style="--c:${h.color};--d:${h.darkColor}">` +
       `<div class="frame">${media(h.img, h.title, h.color, h.darkColor)}</div>` +
-      `<h2>${esc(h.title)}</h2><span class="fact">${esc(h.fact)}</span><p>${esc(h.description)}</p></div>`
+      `<h2>${esc(h.title)}</h2>${h.fact ? `<span class="fact">${esc(h.fact)}</span>` : ''}${h.description ? `<p>${esc(h.description)}</p>` : ''}</div>`
     ).join('');
   }
 
