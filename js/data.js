@@ -71,7 +71,7 @@ window.SITE = {
       {
         "time": "2025/09-2029/06(預計)",
         "title": "國立台北大學 會計學系",
-        "desc": "學士"
+        "desc": ""
       }
     ],
     "aiSkills": [
@@ -83,7 +83,7 @@ window.SITE = {
       {
         "time": "",
         "title": "用 AI 簡化工作",
-        "desc": "例：提供內容給 AI，自動生成 FB 文案、LINE 文案、email 內容"
+        "desc": "例：提供內容給 AI，自動生成 LINE 文案、email 內容"
       }
     ],
     "skills": [
