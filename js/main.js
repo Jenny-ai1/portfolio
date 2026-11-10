@@ -263,11 +263,36 @@
         `</div>`;
     };
 
+    // 心得：每則一張卡片（圖示、標題、內容、下一步）；也接受舊的純文字
+    const reflect = (list) => {
+      const cards = (list || []).map((x) => (typeof x === 'string' ? { text: x } : x)).filter((x) => x && (x.title || x.text));
+      if (!cards.length) return '';
+      return `<div class="role-reflect"><h4><span aria-hidden="true">💭</span>心得</h4><div class="reflect-grid">` +
+        cards.map((x) => `<article class="reflect-card">` +
+          `${x.title ? `<div class="reflect-head">${x.icon ? `<span class="reflect-icon" aria-hidden="true">${esc(x.icon)}</span>` : ''}<b>${esc(x.title)}</b></div>` : ''}` +
+          `${x.text ? `<p>${esc(x.text)}</p>` : ''}` +
+          `${x.next ? `<p class="reflect-next"><span>下一步</span>${esc(x.next)}</p>` : ''}</article>`).join('') +
+        `</div></div>`;
+    };
+
+    // 「我負責的部分」：編號步驟＋一句重點
+    const role = (o) => {
+      const r = o.role;
+      const steps = r ? (r.steps || []).filter((s) => s.title || s.text) : [];
+      if (!steps.length) return '';
+      return `<section class="role">${r.title ? `<h4 class="role-title">${esc(r.title)}</h4>` : ''}` +
+        (r.insight ? `<p class="role-insight"><b>重點</b>${esc(r.insight)}</p>` : '') +
+        `<ol class="role-steps">${steps.map((s, i) =>
+          `<li${s.highlight ? ' class="is-key"' : ''}><span class="role-n">${String(i + 1).padStart(2, '0')}</span><div>${s.highlight ? '<span class="role-key">★ 營建業的重點</span>' : ''}<b>${esc(s.title)}</b>${s.text ? `<p>${esc(s.text)}</p>` : ''}${s.tip ? `<div class="role-tip"><span>評審建議</span><p>${esc(s.tip)}</p></div>` : ''}</div></li>`).join('')}</ol>` +
+        reflect(r.reflection) +
+        `</section>`;
+    };
+
     const grid = $('#work-grid');
     grid.innerHTML = items.length
       ? items.map((o) => `<article class="work${o.view === 'slides' ? ' slides' : ''}${o.view === 'flow' ? ' is-flow' : ''}">` +
           pics(o) +
-          `<div class="work-body">${o.title ? `<h3>${esc(o.title)}</h3>` : ''}${jobLine(o)}${o.description ? `<p>${esc(o.description)}</p>` : ''}${(o.view === 'slides' && /\.pdf$/i.test(o.url || '') ? `<a class="view" href="${esc(o.url)}" download="${esc(o.title)}.pdf">下載完整 PDF ↓</a>` : view(o, /\.pdf$/i.test(o.url || '') ? '查看完整報告 →' : '查看連結 →'))}${process(o)}</div>${flow(o)}</article>`).join('')
+          `<div class="work-body">${o.title ? `<h3>${esc(o.title)}</h3>` : ''}${jobLine(o)}${o.description ? `<p>${esc(o.description)}</p>` : ''}${(o.view === 'slides' && /\.pdf$/i.test(o.url || '') ? `<a class="view" href="${esc(o.url)}" download="${esc(o.title)}.pdf">下載完整 PDF ↓</a>` : view(o, /\.pdf$/i.test(o.url || '') ? '查看完整報告 →' : '查看連結 →'))}${process(o)}</div>${role(o)}${flow(o)}</article>`).join('')
       : '<p class="work-empty">作品整理中，敬請期待。</p>';
     function goTo(box, to) {
       const all = JSON.parse(box.dataset.pics);

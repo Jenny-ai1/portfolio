@@ -386,6 +386,44 @@ button { font-family: inherit; }
   .flow-rules { grid-column: 1 / -1; }
 }
 
+/* 作品裡的「我負責的部分」 */
+.role { display: flex; flex-direction: column; gap: 14px; margin: 4px 6px 6px; padding-top: 16px; border-top: 2px dashed var(--lilac); }
+.role-title { margin: 0; font: 900 18px/1.4 var(--font-tc); }
+.work .role-insight { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; margin: 0; padding: 12px 16px; border-radius: 14px; background: var(--bg); color: var(--cream); font: 700 15px/1.6 var(--font-tc); }
+.role-insight b { padding: 2px 10px; border-radius: 999px; background: var(--yellow); color: var(--bg); font-size: 12px; }
+.role-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.role-steps li { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 16px; background: #fff; border: 2px solid color-mix(in srgb, var(--sand) 60%, #fff); }
+.role-n { flex: none; font: 700 22px/1 var(--font-en); color: var(--orange-1); }
+.role-steps b { display: block; font: 900 15px/1.4 var(--font-tc); }
+.role-steps p { margin: 4px 0 0; font-size: 13.5px; line-height: 1.7; color: var(--muted-2); }
+/* 重點中的重點：橘色外框、暖色底、在寬螢幕佔兩格 */
+.role-steps li.is-key {
+  grid-column: span 2; border: 3px solid var(--orange-1);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--yellow) 30%, #fff), color-mix(in srgb, var(--orange-2) 18%, #fff));
+  box-shadow: 0 6px 0 var(--red);
+}
+.role-steps li.is-key .role-n { font-size: 30px; color: var(--red); }
+.role-steps li.is-key b { font-size: 18px; }
+.role-steps li.is-key p { font-size: 15px; color: var(--bg); font-weight: 500; }
+.role-key { display: inline-block; margin-bottom: 6px; padding: 3px 10px; border-radius: 999px; background: var(--red); color: var(--cream); font: 700 12px var(--font-tc); }
+@media (max-width: 520px) { .role-steps li.is-key { grid-column: auto; } }
+/* 步驟裡的評審建議小框 */
+.role-tip { margin-top: 10px; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--teal); background: color-mix(in srgb, var(--teal) 12%, #fff); }
+.role-tip span { display: inline-block; margin-bottom: 4px; padding: 2px 9px; border-radius: 999px; background: var(--teal); color: var(--bg); font: 700 12px var(--font-tc); }
+.work .role-tip p { margin: 0; font-size: 13.5px; line-height: 1.7; color: var(--bg); }
+/* 心得 */
+.role-reflect { padding: 20px; border-radius: 18px; background: color-mix(in srgb, var(--lilac) 35%, #fff); }
+.role-reflect h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; font: 900 20px var(--font-tc); }
+.reflect-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 640px) { .reflect-grid { grid-template-columns: repeat(2, 1fr); } }
+.reflect-card { display: flex; flex-direction: column; gap: 10px; padding: 20px; border-radius: 16px; background: #fff; box-shadow: 0 4px 0 color-mix(in srgb, var(--lilac) 70%, var(--bg)); }
+.reflect-head { display: flex; align-items: center; gap: 12px; }
+.reflect-icon { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: color-mix(in srgb, var(--lilac) 40%, #fff); font-size: 21px; }
+.reflect-head b { font: 900 18px/1.45 var(--font-tc); }
+.work .reflect-card p { margin: 0; font-size: 16px; line-height: 1.85; color: var(--muted-2); }
+.work .reflect-card .reflect-next { margin-top: auto; padding: 12px 16px; border-radius: 9px; border-left: 3px solid var(--lilac); background: color-mix(in srgb, var(--lilac) 18%, #fff); color: var(--bg); font-size: 15.5px; font-weight: 500; }
+.reflect-next > span:first-child { display: inline-block; margin-right: 8px; padding: 3px 10px; border-radius: 9px; background: var(--muted-1); color: #fff; font: 700 12.5px/1.5 var(--font-tc); vertical-align: 1px; }
+
 .work-empty { grid-column: 1 / -1; margin: 12px 0; font: 700 16px var(--font-tc); color: var(--lilac); }
 
 /* ===== Hobbies ===== */
