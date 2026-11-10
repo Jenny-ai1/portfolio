@@ -453,6 +453,25 @@ button { font-family: inherit; }
   position: absolute; top: 16px; right: 16px; width: 44px; height: 44px; border-radius: 50%;
   border: 0; background: var(--yellow); color: var(--bg); font: 900 22px var(--font-en); cursor: pointer;
 }
+.lightbox .lb-nav, .lightbox .lb-count { display: none; }
+.lightbox.multi .lb-nav, .lightbox.multi .lb-count { display: grid; }
+.lightbox .lb-nav {
+  top: 50%; right: auto; transform: translateY(-50%); place-items: center; width: 52px; height: 52px; z-index: 1;
+  background: var(--cream); font: 700 32px/1 var(--font-en); box-shadow: 0 6px 18px rgba(0, 0, 0, .35);
+}
+.lightbox .lb-nav:hover { background: var(--yellow); }
+.lightbox .lb-nav.prev { left: 16px; }
+.lightbox .lb-nav.next { left: auto; right: 16px; }
+.lightbox .lb-count {
+  position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); padding: 5px 14px; border-radius: 999px;
+  background: var(--cream); color: var(--bg); font: 700 14px var(--font-en);
+}
+.lightbox.multi { padding-inline: 84px; }
+@media (max-width: 640px) {
+  .lightbox.multi { padding-inline: 12px; }
+  .lightbox .lb-nav { top: auto; bottom: 10px; transform: none; width: 44px; height: 44px; font-size: 26px; }
+  .lightbox .lb-count { bottom: 20px; }
+}
 
 /* ===== Mobile tweaks ===== */
 @container (max-width: 719px) {

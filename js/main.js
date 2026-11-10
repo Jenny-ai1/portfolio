@@ -54,20 +54,55 @@
   const media = (img, alt, c, d) => (img ? `<img class="cover-img" src="${esc(img)}" alt="${esc(alt)}" loading="lazy">` : placeholder(c, d));
 
   /* ---------- Lightbox ---------- */
-  let lb;
-  function openLightbox(src, alt, wide) {
+  // 放大看圖；傳入 list（同一份作品的所有圖）時可以左右切換
+  let lb, lbList = [], lbAt = 0, lbAlt = '', lbOnMove = null;
+  function lbShow(i) {
+    lbAt = (i + lbList.length) % lbList.length;
+    const im = lb.querySelector('img');
+    im.src = lbList[lbAt];
+    im.alt = lbList.length > 1 ? `${lbAlt}（第 ${lbAt + 1} 張）` : lbAlt;
+    lb.querySelector('.lb-count').textContent = `${lbAt + 1} / ${lbList.length}`;
+    if (lbList.length > 1) new Image().src = lbList[(lbAt + 1) % lbList.length];
+    if (lbOnMove) lbOnMove(lbAt);
+  }
+  function closeLightbox() { lb.classList.remove('open'); }
+  function openLightbox(src, alt, wide, list, at, onMove) {
     if (!lb) {
       lb = document.createElement('div');
       lb.className = 'lightbox';
-      lb.innerHTML = '<button aria-label="關閉">×</button><img alt="">';
-      lb.addEventListener('click', (e) => { if (e.target === lb || e.target.tagName === 'BUTTON') lb.classList.remove('open'); });
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') lb.classList.remove('open'); });
+      lb.innerHTML = '<button class="lb-close" aria-label="關閉">×</button>' +
+        '<button class="lb-nav prev" aria-label="上一張">‹</button><img alt=""><button class="lb-nav next" aria-label="下一張">›</button>' +
+        '<span class="lb-count"></span>';
+      lb.addEventListener('click', (e) => {
+        const nav = e.target.closest('.lb-nav');
+        if (nav) { lbShow(lbAt + (nav.classList.contains('next') ? 1 : -1)); return; }
+        if (e.target === lb || e.target.closest('.lb-close')) closeLightbox();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (!lb.classList.contains('open')) return;
+        if (e.key === 'Escape') closeLightbox();
+        else if (lbList.length > 1 && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+          e.preventDefault(); e.stopImmediatePropagation();
+          lbShow(lbAt + (e.key === 'ArrowRight' ? 1 : -1));
+        }
+      }, true);
+      let x0 = null;
+      lb.addEventListener('touchstart', (e) => { x0 = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
+      lb.addEventListener('touchend', (e) => {
+        if (x0 === null || lbList.length < 2) return;
+        const dx = e.changedTouches[0].clientX - x0;
+        if (Math.abs(dx) > 40) lbShow(lbAt + (dx < 0 ? 1 : -1));
+        x0 = null;
+      });
       document.body.appendChild(lb);
     }
-    const im = lb.querySelector('img');
-    im.src = src; im.alt = alt || '';
+    lbList = list && list.length ? list : [src];
+    lbAlt = alt || '';
+    lbOnMove = onMove || null;
     lb.classList.toggle('wide', !!wide);
+    lb.classList.toggle('multi', lbList.length > 1);
     lb.classList.add('open');
+    lbShow(lbList[at] === src ? at : Math.max(0, lbList.indexOf(src)));
   }
 
   /* ---------- CV buttons: data-cv="preview" opens the PDF, data-cv="download" saves it ---------- */
@@ -141,7 +176,7 @@
         `<div class="body"><div class="meta"><span class="cat">${esc(p.category)}</span><span class="year">${esc(p.year)}</span></div>` +
         `<h3>${esc(p.title)}</h3>${job}<p>${esc(p.description)}</p>` +
         `<div class="tags">${(p.tags || []).map((t) => `<span>${esc(t)}</span>`).join('')}</div>` +
-        `<a class="view" href="work.html?w=${S.projects.indexOf(p)}">查看${n ? ` ${n} 件` : ''}作品 →</a></div></article>`;
+        `<a class="view" href="work.html?w=${S.projects.indexOf(p)}">查看${n > 1 ? ` ${n} 件` : ''}作品 →</a></div></article>`;
     };
     function render() {
       chips.innerHTML = cats.map((c) => `<button class="chip${c === cur ? ' on' : ''}" aria-pressed="${c === cur}" data-c="${esc(c)}">${esc(c)}</button>`).join('');
@@ -256,7 +291,22 @@
       const t = e.target.closest('.slide-thumb');
       if (t) { goTo(t.parentElement.previousElementSibling, +t.dataset.i); return; }
       const z = e.target.closest('.work-zoom');
-      if (z) openLightbox(z.dataset.src, z.dataset.alt, z.dataset.wide);
+      if (!z) return;
+      const box = z.closest('.work-pics');
+      if (box) {
+        // 主圖：放大後可以翻同一份作品的每一頁，關掉時卡片停在同一頁
+        openLightbox(z.dataset.src, z.dataset.alt, z.dataset.wide, JSON.parse(box.dataset.pics), +box.dataset.i,
+          (i) => { if (+box.dataset.i !== i) goTo(box, i); });
+        return;
+      }
+      const steps = z.closest('.work-process');
+      if (steps) {
+        // 設計歷程：可以在各版本之間切換
+        const list = [...steps.querySelectorAll('.work-zoom')].map((b) => b.dataset.src);
+        openLightbox(z.dataset.src, '設計歷程', false, list, list.indexOf(z.dataset.src));
+        return;
+      }
+      openLightbox(z.dataset.src, z.dataset.alt, z.dataset.wide);
     });
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
