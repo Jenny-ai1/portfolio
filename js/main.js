@@ -12,6 +12,7 @@
 
   const PAGES = [
     { id: 'home', href: 'index.html', label: '首頁' },
+    { id: 'experience', href: 'experience.html', label: '工作經驗' },
     { id: 'portfolio', href: 'portfolio.html', label: '作品集' },
     { id: 'hobbies', href: 'hobbies.html', label: '興趣愛好' },
     { id: 'certificates', href: 'certificates.html', label: '證照' }
@@ -24,7 +25,7 @@
     header.innerHTML =
       `<a class="logo" href="index.html"><span class="logo-planet"></span>${esc(P.name)}</a>` +
       `<nav class="nav" aria-label="主選單">` +
-      PAGES.map((p) => `<a href="${p.href}"${p.id === (page === 'work' ? 'portfolio' : page) ? ' class="current" aria-current="page"' : ''}>${p.label}</a>`).join('') +
+      PAGES.map((p) => `<a href="${p.href}"${p.id === ({ work: 'portfolio', job: 'experience' }[page] || page) ? ' class="current" aria-current="page"' : ''}>${p.label}</a>`).join('') +
       `</nav>`;
   }
 
@@ -35,7 +36,9 @@
   }
 
   const NEXT = {
+    experience: { href: 'portfolio.html', k: 'NEXT STOP · 下一站', t: '作品集', a: '→' },
     portfolio: { href: 'hobbies.html', k: 'NEXT STOP · 下一站', t: '興趣愛好', a: '→' },
+    job: { href: 'experience.html', k: 'BACK · 返回', t: '回到工作經驗', a: '↺' },
     work: { href: 'portfolio.html', k: 'BACK · 返回', t: '回到作品集', a: '↺' },
     hobbies: { href: 'certificates.html', k: 'NEXT STOP · 下一站', t: '證照', a: '→' },
     certificates: { href: 'index.html', k: 'BACK TO ORBIT · 返回', t: '回到首頁', a: '↺' }
@@ -151,13 +154,192 @@
       `<div class="cv-row${e.time ? '' : ' no-time'}">` +
       (e.time ? `<span class="time">${esc(e.time)}</span>` : '') +
       `<div class="what"><b>${esc(e.title)}</b>${desc(e.desc)}</div></div>`).join('');
+    // 工作經驗清單裡的每一項，可以指定出現在首頁 CV 的哪一區（預設是實習經驗）
+    const jobs = P.internships || [];
+    const inClubs = jobs.filter((e) => e.cvGroup === '社團經驗');
+    const inInterns = jobs.filter((e) => e.cvGroup !== '社團經驗' && e.cvGroup !== '不顯示');
     const blocks = [
-      ['實習經驗', P.internships], ['社團經驗', P.clubs], ['學歷', P.education], ['AI 技能', P.aiSkills],
+      ['實習經驗', inInterns], ['社團經驗', [...inClubs, ...(P.clubs || [])]], ['學歷', P.education], ['AI 技能', P.aiSkills],
       ['經歷', P.experience]
     ].filter(([, list]) => list && list.length);
     $('#cv-blocks').innerHTML = blocks.map(([label, list]) =>
       `<div class="cv-block"><span class="cv-label">${label}</span>${rows(list)}</div>`).join('');
     $('#cv-skills').innerHTML = P.skills.map((s) => `<span>${esc(s)}</span>`).join('');
+  }
+
+  /* ---------- Experience（工作經驗：和首頁 CV 的「實習經驗」共用 profile.internships） ---------- */
+  const lines = (d) => (Array.isArray(d) ? d : (d ? [d] : [])).filter(Boolean);
+  const expBlock = (label, d, cls) => {
+    const l = lines(d);
+    return l.length ? `<div class="exp-block${cls ? ' ' + cls : ''}"><b class="exp-label">${label}</b><ul>${l.map((x) => `<li>${aiLine(x)}</li>`).join('')}</ul></div>` : '';
+  };
+  // 標題寫成「單位 · 職稱」時，拆成兩段顯示
+  const jobName = (e) => {
+    const [org, ...rest] = String(e.title || '').split(/\s*[·・|｜]\s*/);
+    return { org, role: rest.join(' · ') };
+  };
+
+  if (page === 'experience') {
+    const list = P.internships || [];
+    const box = $('#exp-list');
+    if (!list.length) {
+      box.innerHTML = '<p class="work-empty">工作經驗整理中，敬請期待。</p>';
+    } else {
+      // 左邊只放工作名稱；點哪一份，右邊就換成那份工作做了什麼、有哪些作品
+      const norm = (t) => String(t || '').replace(/[\s·・|｜]/g, '');
+      const PALETTE = [['#e8b06a', '#b0723a'], ['#2ec4b6', '#1f8f85'], ['#c3b9de', '#8f84b0'], ['#ffd23f', '#d4a92a'], ['#ff8a4c', '#e0532a']];
+      const cats = [...new Set(S.projects.map((p) => p.category))];
+      const worksOf = (e) => {
+        const out = [];
+        S.projects.forEach((p, w) => (p.items || []).forEach((o, k) => {
+          if (o.job && norm(o.job) === norm(e.title)) out.push({ p, w, o, k });
+        }));
+        return out;
+      };
+      box.innerHTML = `<div class="xp-tabs" role="tablist" aria-label="工作經驗" aria-orientation="vertical">` +
+        list.map((e, i) => `<button type="button" class="xp-tab" role="tab" id="xp-tab-${i}" aria-controls="xp-panel" data-i="${i}">${esc(jobName(e).org)}</button>`).join('') +
+        `</div><div class="xp-panel" id="xp-panel" role="tabpanel" tabindex="-1"></div>`;
+      const tabs = [...box.querySelectorAll('.xp-tab')];
+      const panel = $('#xp-panel');
+      const points = (l) => `<ul class="xp-points">${l.map((x) => `<li>${aiLine(x)}</li>`).join('')}</ul>`;
+      const show = (i, focus) => {
+        const e = list[i];
+        const { org, role } = jobName(e);
+        const desc = lines(e.desc), learned = lines(e.learned), tags = lines(e.tags), works = worksOf(e);
+        const hasSecs = (e.sections || []).some((s) => s && (s.title || s.text || s.img));
+        tabs.forEach((t, k) => {
+          t.setAttribute('aria-selected', k === i ? 'true' : 'false');
+          t.tabIndex = k === i ? 0 : -1;
+        });
+        panel.setAttribute('aria-labelledby', `xp-tab-${i}`);
+        panel.innerHTML =
+          `<h2 class="xp-title">${role ? `${esc(role)} <span class="xp-at">@</span> ` : ''}<span class="xp-org">${esc(org)}</span></h2>` +
+          (e.time ? `<p class="xp-time">${esc(e.time)}</p>` : '') +
+          (e.summary ? `<p class="xp-lead">${esc(e.summary)}</p>` : '') +
+          (desc.length ? points(desc) : '') +
+          (learned.length ? `<p class="xp-sub">收穫</p>${points(learned)}` : '') +
+          (tags.length ? `<div class="exp-tags">${tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div>` : '') +
+          (hasSecs ? `<a class="xp-more" href="job.html?j=${i}">看完整過程 →</a>` : '') +
+          (works.length ? `<section class="xp-works"><h3 class="xp-works-h">這份工作的作品<small>${works.length} 件</small></h3><div class="xp-grid">` +
+            works.map(({ p, w, o, k }) => {
+              // 沒有放畫面的作品，用和作品集卡片一樣的預設星球圖，顏色依作品類別
+              const [c, d] = PALETTE[cats.indexOf(p.category) % PALETTE.length];
+              return `<a class="xp-work" style="--c:${c}" href="work.html?w=${w}&from=exp${i}#item-${k}">` +
+                `<span class="xp-work-img">${o.img ? `<img src="${esc(o.img)}" alt="" loading="lazy">` : placeholder(c, d)}</span>` +
+                `<b>${esc(o.title || p.title)}</b><small>${esc(p.category)}${o.ai ? ' · AI 協作' : ''}</small></a>`;
+            }).join('') +
+            `</div></section>` : '');
+        if (focus) tabs[i].focus();
+      };
+      const fromHash = () => {
+        const m = location.hash.match(/^#j=(\d+)$/);
+        return m && list[+m[1]] ? +m[1] : 0;
+      };
+      const pick = (i, focus) => {
+        show(i, focus);
+        history.replaceState(null, '', `#j=${i}`);
+      };
+      box.addEventListener('click', (ev) => {
+        const t = ev.target.closest('.xp-tab');
+        if (t) pick(+t.dataset.i);
+      });
+      box.addEventListener('keydown', (ev) => {
+        const t = ev.target.closest('.xp-tab');
+        if (!t) return;
+        const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[ev.key];
+        const i = ev.key === 'Home' ? 0 : ev.key === 'End' ? list.length - 1 : step ? (+t.dataset.i + step + list.length) % list.length : null;
+        if (i === null) return;
+        ev.preventDefault();
+        pick(i, true);
+      });
+      window.addEventListener('hashchange', () => show(fromHash()));
+      show(fromHash());
+    }
+  }
+
+  /* ---------- Job detail（工作經驗卡片點進去的頁面） ---------- */
+  if (page === 'job') {
+    const list = P.internships || [];
+    const j = new URLSearchParams(location.search).get('j');
+    const e = /^\d+$/.test(j || '') ? list[+j] : null;
+    if (!e) { location.replace('experience.html'); return; }
+    const { org, role } = jobName(e);
+    document.title = `${org} · ${P.name}`;
+    $('#job-head').innerHTML = `<div class="job-head">` +
+      `<div class="job-meta">${role ? `<span class="exp-role">${esc(role)}</span>` : ''}${e.time ? `<span class="exp-time">${esc(e.time)}</span>` : ''}</div>` +
+      `<h1>${esc(org)}</h1>` +
+      (e.summary ? `<p class="job-lead">${esc(e.summary)}</p>` : '') +
+      `<div class="exp-cols">${expBlock('工作內容', e.desc)}${expBlock('收穫', e.learned, 'is-learned')}</div>` +
+      (lines(e.tags).length ? `<div class="exp-tags">${lines(e.tags).map((t) => `<span>${esc(t)}</span>`).join('')}</div>` : '') +
+      `</div>`;
+
+    // 內文：一行一段；以「-」「•」開頭的連續幾行會變成條列
+    const rich = (text) => {
+      let html = '', ul = [];
+      const flush = () => { if (ul.length) { html += `<ul class="job-points">${ul.map((x) => `<li>${aiLine(x)}</li>`).join('')}</ul>`; ul = []; } };
+      String(text || '').split('\n').map((s) => s.trim()).filter(Boolean).forEach((s) => {
+        const m = s.match(/^[-–•・*]\s*(.+)$/);
+        if (m) ul.push(m[1]); else { flush(); html += `<p>${esc(s)}</p>`; }
+      });
+      flush();
+      return html;
+    };
+    const secs = (e.sections || []).filter((s) => s && (s.title || s.text || s.img));
+    const box = $('#job-sections');
+    // 標題寫成「階段：一句話」時，冒號前面變成小標、後面變成大標
+    const KCOL = ['#2ec4b6', '#e8b06a', '#c3b9de', '#ffd23f', '#ff8a4c'];
+    const heads = secs.map((s) => {
+      const m = String(s.title || '').match(/^(.{1,12}?)[：:]\s*(.+)$/);
+      return m ? { kicker: m[1], main: m[2] } : { kicker: '', main: s.title || '' };
+    });
+    box.innerHTML = secs.map((s, i) => {
+      const h = heads[i];
+      return `<section class="job-sec" id="sec-${i + 1}" style="--k:${KCOL[i % KCOL.length]}">` +
+        `<header class="job-sec-side"><span class="job-n">${String(i + 1).padStart(2, '0')}</span>` +
+        `<div>${h.kicker ? `<span class="job-kicker">${esc(h.kicker)}</span>` : ''}${h.main ? `<h2>${esc(h.main)}</h2>` : ''}</div></header>` +
+        `<div class="job-sec-body">${rich(s.text)}` +
+        (s.highlight ? `<blockquote class="job-callout">${esc(s.highlight)}</blockquote>` : '') +
+        (s.img ? `<button class="job-zoom" data-src="${esc(s.img)}" data-alt="${esc(s.title || org)}" aria-label="放大查看圖片"><img src="${esc(s.img)}" alt="${esc(s.title || org)}" loading="lazy"></button>` : '') +
+        `</div></section>`;
+    }).join('');
+    // 兩段以上時，在最上面放一排階段導覽，點了會捲到那一段
+    if (secs.length > 1) {
+      $('.job-head').insertAdjacentHTML('beforeend', `<ol class="job-steps" aria-label="內容導覽">` +
+        heads.map((h, i) => `<li style="--k:${KCOL[i % KCOL.length]}"><a href="#sec-${i + 1}"><span>${String(i + 1).padStart(2, '0')}</span>${esc(h.kicker || h.main || `第 ${i + 1} 段`)}</a></li>`).join('') +
+        `</ol>`);
+    }
+    box.addEventListener('click', (ev) => {
+      const z = ev.target.closest('.job-zoom');
+      if (!z) return;
+      const all = [...box.querySelectorAll('.job-zoom')].map((b) => b.dataset.src);
+      openLightbox(z.dataset.src, z.dataset.alt, false, all, all.indexOf(z.dataset.src));
+    });
+
+    // 相關作品：作品集裡「工作」填的和這份工作的標題一樣（單位 · 職稱），就會自動出現在這裡
+    const norm = (t) => String(t || '').replace(/[\s·・|｜]/g, '');
+    const sameJob = (a, b) => norm(a) === norm(b);
+    const PALETTE = [['#e8b06a', '#b0723a'], ['#2ec4b6', '#1f8f85'], ['#c3b9de', '#8f84b0'], ['#ffd23f', '#d4a92a'], ['#ff8a4c', '#e0532a']];
+    const cats = [...new Set(S.projects.map((p) => p.category))];
+    const related = [];
+    S.projects.forEach((p, w) => (p.items || []).forEach((o, k) => {
+      if (o.job && sameJob(o.job, e.title)) related.push({ p, w, o, k });
+    }));
+    if (related.length) {
+      box.insertAdjacentHTML('afterend', `<section class="job-works"><h2>這份工作的作品<small>${related.length} 件</small></h2>` +
+        related.map(({ p, w, o, k }) => {
+          const [c] = PALETTE[cats.indexOf(p.category) % PALETTE.length];
+          const text = o.description || (o.flow && o.flow.why) || p.description || '';
+          return `<a class="job-work" style="--c:${c}" href="work.html?w=${w}&from=job${j}#item-${k}">` +
+            `<span class="job-work-thumb">${o.img ? `<img src="${esc(o.img)}" alt="">` : ''}</span>` +
+            `<span class="job-work-text"><small>${esc(p.category)} · ${esc(p.title)}${o.ai ? AI_MARK : ''}</small>` +
+            `<b>${esc(o.title || p.title)}</b>${text ? `<span class="job-work-desc">${esc(text)}</span>` : ''}</span>` +
+            `<span class="exp-arrow" aria-hidden="true">→</span></a>`;
+        }).join('') + `</section>`);
+    }
+
+    const link = (k, cls, label) => (list[k]
+      ? `<a class="${cls}" href="job.html?j=${k}"><small>${label}</small><b>${esc(jobName(list[k]).org)}</b></a>` : '<span></span>');
+    $('#job-pager').innerHTML = list.length > 1 ? link(+j - 1, 'prev', '← 上一份') + link(+j + 1, 'next', '下一份 →') : '';
   }
 
   /* ---------- Portfolio ---------- */
@@ -211,6 +393,12 @@
 
     document.title = `${p.title} · ${P.name}`;
     $('#work-back').href = 'portfolio.html#' + new URLSearchParams({ cat: p.category });
+    // 從工作經驗詳細頁點進來的，返回鍵就回那份工作
+    const from = (new URLSearchParams(location.search).get('from') || '').match(/^(job|exp)(\d+)$/);
+    if (from && (P.internships || [])[+from[2]]) {
+      $('#work-back').href = from[1] === 'exp' ? `experience.html#j=${from[2]}` : `job.html?j=${from[2]}`;
+      $('#work-back').textContent = `← 回${jobName(P.internships[+from[2]]).org}`;
+    }
     const details = `${p.description ? `<p>${esc(p.description)}</p>` : ''}${jobLine(p)}` +
       `<div class="tags">${(p.tags || []).map((t) => `<span>${esc(t)}</span>`).join('')}</div>${view(p, '相關連結 →')}`;
     if (items.some((o) => o.view === 'slides')) {
@@ -295,7 +483,7 @@
 
     const grid = $('#work-grid');
     grid.innerHTML = items.length
-      ? items.map((o) => `<article class="work${o.view === 'slides' ? ' slides' : ''}${o.view === 'flow' ? ' is-flow' : ''}">` +
+      ? items.map((o, k) => `<article id="item-${k}" class="work${o.view === 'slides' ? ' slides' : ''}${o.view === 'flow' ? ' is-flow' : ''}">` +
           pics(o) +
           `<div class="work-body">${o.title ? `<h3>${esc(o.title)}</h3>` : ''}${jobLine(o)}${o.description ? `<p>${esc(o.description)}</p>` : ''}${(o.view === 'slides' && /\.pdf$/i.test(o.url || '') ? `<a class="view" href="${esc(o.url)}" download="${esc(o.title)}.pdf">下載完整 PDF ↓</a>` : view(o, /\.pdf$/i.test(o.url || '') ? '查看完整報告 →' : '查看連結 →'))}${process(o)}</div>${role(o)}${flow(o)}</article>`).join('')
       : '<p class="work-empty">作品整理中，敬請期待。</p>';
@@ -387,6 +575,7 @@
   function initMeteorGame(el) {
     const HITS = 5;
     const COLORS = {
+      experience: { c: '#2ec4b6', d: '#1f8f85', crater: '#25a99d' },
       portfolio: { c: '#e8b06a', d: '#b0723a', crater: '#b9803f' },
       hobbies: { c: '#c3b9de', d: '#8f84b0', crater: '#9a8fb8' },
       certificates: { c: '#ffd23f', d: '#d4a92a', crater: '#c4a640' }
