@@ -189,6 +189,8 @@
       const norm = (t) => String(t || '').replace(/[\s·・|｜]/g, '');
       const PALETTE = [['#e8b06a', '#b0723a'], ['#2ec4b6', '#1f8f85'], ['#c3b9de', '#8f84b0'], ['#ffd23f', '#d4a92a'], ['#ff8a4c', '#e0532a']];
       const cats = [...new Set(S.projects.map((p) => p.category))];
+      // 「看完整過程 →」連結：暫時關閉。job.html 和內容都還在，改成 true 就會回來
+      const SHOW_FULL_PAGE = false;
       const worksOf = (e) => {
         const out = [];
         S.projects.forEach((p, w) => (p.items || []).forEach((o, k) => {
@@ -219,7 +221,7 @@
           (desc.length ? points(desc) : '') +
           (learned.length ? `<p class="xp-sub">收穫</p>${points(learned)}` : '') +
           (tags.length ? `<div class="exp-tags">${tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div>` : '') +
-          (hasSecs ? `<a class="xp-more" href="job.html?j=${i}">看完整過程 →</a>` : '') +
+          (SHOW_FULL_PAGE && hasSecs ? `<a class="xp-more" href="job.html?j=${i}">看完整過程 →</a>` : '') +
           (works.length ? `<section class="xp-works"><h3 class="xp-works-h">這份工作的作品<small>${works.length} 件</small></h3><div class="xp-grid">` +
             works.map(({ p, w, o, k }) => {
               // 沒有放畫面的作品，用和作品集卡片一樣的預設星球圖，顏色依作品類別
